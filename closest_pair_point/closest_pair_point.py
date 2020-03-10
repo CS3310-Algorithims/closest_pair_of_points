@@ -63,6 +63,7 @@ def bf_closest_pair(list):
 def bf_closest(list, low, high):
     """
     Bruteforce approach to get minimal distance of two points in list.
+    Minumum size is 2 (high - low >= 1), else exception IndexError is raised.
 
     Parameters
     ----------
@@ -75,18 +76,21 @@ def bf_closest(list, low, high):
     dict of "distance" (float) and "pair" (tuple of Point):
         minimal distance and two Points
     """
-    min_dist = sys.maxsize
-    min_pair = (list[0], list[1])
+    if(low < high):
+        min_dist = sys.maxsize
+        min_pair = (list[0], list[1])
 
-    for i in range(low, high + 1):
-        for j in range(i + 1, high + 1):
-            distance = dist(list[i], list[j])
+        for i in range(low, high + 1):
+            for j in range(i + 1, high + 1):
+                distance = dist(list[i], list[j])
 
-            if(distance < min_dist):
-                min_dist = distance
-                min_pair = (list[i], list[j])
+                if(distance < min_dist):
+                    min_dist = distance
+                    min_pair = (list[i], list[j])
 
-    return {"distance": min_dist, "pair": min_pair}
+        return {"distance": min_dist, "pair": min_pair}
+    else:
+        raise IndexError()
 
 
 def closest(list_x, low, high, list_y):
@@ -119,22 +123,22 @@ def closest(list_x, low, high, list_y):
     list_y_right = []
 
     # split list_y by middle of list_x's midpoint
-    for i in range(len(list_x)):
+    for i in range(len(list_y)):
         if(list_y[i].x < mid_point.x):
-            list_y_left = list_y[i]
+            list_y_left.append(list_y[i])
         else:
-            list_y_right = list_y[i]
+            list_y_right.append(list_y[i])
 
     # recurse
     min_pair_left = closest(list_x, low, mid, list_y_left)
-    min_pair_right = closest(list_y, mid + 1, high, list_y_right)
+    min_pair_right = closest(list_x, mid + 1, high, list_y_right)
 
     # get minimal pair of the two parts
     min_pair = min_of_pairs(min_pair_left, min_pair_right)
 
     # build array to find points smaller than min_dist
     strip = []
-    for i in range(low, high):
+    for i in range(len(list_y)):
         if(abs(list_y[i].x - mid_point.x) < min_pair["distance"]):
             strip.append(list_y[i])
 
