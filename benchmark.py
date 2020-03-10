@@ -74,7 +74,8 @@ class Benchmark(object):
         re_ansewrs = []
 
         # generate lists of lists
-        print("\nGenerating same lists for bruteforce and recursion...")
+        print("\nGenerating unique, identical lists for bruteforce and "
+              "recursion...")
         for i in range(sample_size):
             # generate unique list of size twice of n[i] using random.sample()
             unique_list = random.sample(range(0, 3 * n[i]), 2 * n[i])
@@ -151,9 +152,9 @@ class Benchmark(object):
         plt.figure(fig)
         plt.plot(n, timings_bruteforce, label="Bruteforce")
         plt.plot(n, timings_recursive, label="Recursive")
-        plt.xlabel('n input size')
-        plt.ylabel('timings in seconds')
-        plt.title('Growth Rates: Merge Sort vs Quick Sort')
+        plt.xlabel('input size (n)')
+        plt.ylabel('timings (seconds)')
+        plt.title('Growth Rates: Bruteforce vs Recursion')
         plt.legend()  # show legend
 
 
