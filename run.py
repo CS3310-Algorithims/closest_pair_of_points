@@ -2,7 +2,7 @@
 Group Project - Closest Pair of Points
 """
 
-from closest_pair_point import Point, bf_closest_points, closest_pair
+from closest_pair_point import Point, bf_closest_pair, closest_pair
 
 
 class Run(object):
@@ -23,8 +23,11 @@ class Run(object):
 
         print(f"list of points\n{points}\n")
 
-        min_pair = closest_pair(points)
-        print(f"solution: {min_pair}")
+        bf_min_pair = bf_closest_pair(points)
+        re_min_pair = closest_pair(points)
+
+        print(f"Bruteforce solution: {bf_min_pair}")
+        print(f"Recursive solution: {re_min_pair}")
 
 
 if __name__ == "__main__":

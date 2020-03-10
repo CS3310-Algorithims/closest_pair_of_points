@@ -46,7 +46,21 @@ def dist(point_a, point_b):
     )
 
 
-def bf_closest_points(list, low, high):
+def bf_closest_pair(list):
+    """
+    Wrapper for bruteforce approach to get minimal distance of two points in list.
+
+    list (list): List of Points
+
+    Return
+    ------
+    dict of "distance" (float) and "pair" (tuple of Point):
+        minimal distance and two Points
+    """
+    return bf_closest(list, 0, len(list) - 1)
+
+
+def bf_closest(list, low, high):
     """
     Bruteforce approach to get minimal distance of two points in list.
 
@@ -96,7 +110,7 @@ def closest(list_x, low, high, list_y):
     """
     # base case: use brute force on size 3 or less
     if(high - low + 1 <= 3):
-        return bf_closest_points(list_x, low, high)
+        return bf_closest(list_x, low, high)
 
     # initializations
     mid = (low + high) // 2
