@@ -13,13 +13,8 @@ class Run(object):
     def closest_pair(self):
         """Run closest pair of points
         """
-        a = Point(2, 3)
-        b = Point(12, 30)
-        c = Point(40, 50)
-        d = Point(5, 1)
-        e = Point(12, 10)
-        f = Point(3, 4)
-        points = [a, b, c, d, e, f]
+        points = [Point(5, 2), Point(3, 2), Point(7, 1), Point(
+            5, 7), Point(3, 5), Point(6, 7), Point(5, 5), Point(3, 1)]
 
         print(f"list of points\n{points}\n")
 

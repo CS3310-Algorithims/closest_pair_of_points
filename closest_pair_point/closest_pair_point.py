@@ -22,6 +22,12 @@ class Point(object):
     def __repr__(self):
         return f"({self.x}, {self.y})"
 
+    def __eq__(self, o):
+        return self.x == o.x and self.y == o.y
+
+    def __ne__(self, o):
+        return self.x != o.x or self.y != o.y
+
     def __add__(self, o):
         return Point(self.x + o.x, self.y + o.y)
 
@@ -76,11 +82,17 @@ def bf_closest(list, low, high):
     dict of "distance" (float) and "pair" (tuple of Point):
         minimal distance and two Points
     """
-    if(low < high):
-        min_dist = sys.maxsize
-        min_pair = (list[0], list[1])
+    # raise exception if list is less than 2 elements
+    if(high - low <= 0):
+        raise IndexError()
 
-        for i in range(low, high + 1):
+    # set minimal pair as the first two elements
+    min_dist = distance = dist(list[low], list[low + 1])
+    min_pair = (list[low], list[low + 1])
+
+    # iterate if list has more than 2 elements
+    if(high - low > 1):
+        for i in range(low, high):  # skip last element compare b/c redundant
             for j in range(i + 1, high + 1):
                 distance = dist(list[i], list[j])
 
@@ -88,9 +100,7 @@ def bf_closest(list, low, high):
                     min_dist = distance
                     min_pair = (list[i], list[j])
 
-        return {"distance": min_dist, "pair": min_pair}
-    else:
-        raise IndexError()
+    return {"distance": min_dist, "pair": min_pair}
 
 
 def closest(list_x, low, high, list_y):
@@ -124,7 +134,7 @@ def closest(list_x, low, high, list_y):
 
     # split list_y by middle of list_x's midpoint
     for i in range(len(list_y)):
-        if(list_y[i].x < mid_point.x):
+        if(list_y[i].x <= mid_point.x):
             list_y_left.append(list_y[i])
         else:
             list_y_right.append(list_y[i])
@@ -136,10 +146,14 @@ def closest(list_x, low, high, list_y):
     # get minimal pair of the two parts
     min_pair = min_of_pairs(min_pair_left, min_pair_right)
 
-    # build array to find points smaller than min_dist
+    # find the delta of current strip: from the middle of [low to high]
+    strip_mid = (low + high) // 2
+    delta = list_x[strip_mid].x + min_pair["distance"]
+
+    # build strip array to find points smaller than delta
     strip = []
     for i in range(len(list_y)):
-        if(abs(list_y[i].x - mid_point.x) < min_pair["distance"]):
+        if(abs(list_y[i].x - mid_point.x) < delta):
             strip.append(list_y[i])
 
     # get strip's min pair
@@ -151,7 +165,7 @@ def closest(list_x, low, high, list_y):
 
 def min_of_pairs(pair_a, pair_b):
     """Return closest pair of Points of two pair of Points"""
-    if(pair_a["distance"] < pair_b["distance"]):
+    if(pair_a["distance"] <= pair_b["distance"]):
         return pair_a
     else:
         return pair_b
@@ -173,20 +187,15 @@ def strip_closest(strip_list, min_pair):
     """
     strip_min_pair = min_pair
 
-    for i in range(len(strip_list)):
-        for j in range(i + 1, len(strip_list)):
-            # exit if y difference is not less than min pair's distance
-            y_diff = abs(strip_list[j].y - strip_list[j].y)
-            if(y_diff < min_pair["distance"]):
-                break
-
+    for i in range(len(strip_list) - 1):  # skip last element compare
+        for j in range(i + 1, min(i + 7, len(strip_list))):
             # find new strip min pair
             distance = dist(strip_list[i], strip_list[j])
             if(distance < strip_min_pair["distance"]):
                 strip_min_pair = {"distance": distance,
                                   "pair": (strip_list[i], strip_list[j])}
 
-    return min_pair
+    return strip_min_pair
 
 
 def closest_pair(list):
