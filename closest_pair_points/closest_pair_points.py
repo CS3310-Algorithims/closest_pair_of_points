@@ -83,12 +83,12 @@ def bf_closest(list, low, high):
     dict of "distance" (float) and "pair" (tuple of Point):
         minimal distance and two Points
     """
-    # raise exception if list is less than 2 elements
+    # raise exception if list is less than 2 elements (high is inclusive)
     if(high - low <= 0):
         raise IndexError()
 
     # set minimal pair as the first two elements
-    min_dist = distance = dist(list[low], list[low + 1])
+    min_dist = dist(list[low], list[low + 1])
     min_pair = (list[low], list[low + 1])
 
     # iterate if list has more than 2 elements
@@ -147,8 +147,8 @@ def closest(list_x, low, high, list_y):
     # get minimal pair of the two parts
     min_pair = min_of_pairs(min_pair_left, min_pair_right)
 
-    # find the delta of current strip: from the middle of [low to high]
-    delta = list_x[mid].x + min_pair["distance"]
+    # create strip array where all points are within delta distance
+    delta = min_pair["distance"]
 
     # build strip array to find points smaller than delta
     strip = []
@@ -179,6 +179,45 @@ def strip_closest(strip_list, min_pair):
     ----------
     strip_list (list): A strip of list of Points of distance from minimal pair
     min_pair (dict): Minimal distance of two Points
+
+    Note
+    ----
+    Need to only compare at most 7 comparisons per point by correctness proof
+
+    Let d = delta. Then let a strip bisect the middle of two list. The strip
+    has been pre-sorted by y-coordinate, which is required for this proof.
+
+    Most points are at least d wide because delta is the minimal distance of
+    both sides of the list. Hence, in a d x 2d rectangle, there can only
+    be 1 point per d/2 x d/2 square.
+
+    Therefore, a point can have at most 7 points to compare to find a new pair
+    that's less than delta wide. Points larger than delta wide are irrelevant.
+    Because the strip has already been sorted by y-coordinate, you only need
+    to iterate a point to 7 other sequential point comparisons.
+
+           y-coord
+           | 
+        d  |
+         __|__
+        |__|__|
+    2d  |__|__|
+        |__|__|
+    ____|__|__|____ x-coord
+           |
+           |
+
+    Example
+    -------
+    Let's compare point x to every other point in the rectangle, which is at
+    most 7 points.
+
+        d
+         __ __
+        |1_|2_|
+    2d  |x_|3_|
+        |4_|5_|
+        |6_|7_|
 
     Return
     ------
