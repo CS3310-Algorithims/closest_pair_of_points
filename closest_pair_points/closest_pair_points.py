@@ -4,6 +4,7 @@ Closest Pair of Point module
 """
 
 import math
+import random
 import sys
 
 
@@ -211,3 +212,22 @@ def closest_pair(list):
     list_y = sorted(list, key=lambda e: e.y)
 
     return closest(list_x, 0, len(list_x) - 1, list_y)
+
+
+def get_unique_list_points(size):
+    """Generate list of random and unique points
+
+    Parameters
+    ----------
+    size (int): size of desired list
+
+    Return
+    ------
+    list of unique Points
+    """
+    # generate unique list of size twice of size using random.sample()
+    unique_list = random.sample(range(0, 3 * size), 2 * size)
+    mid = len(unique_list) // 2
+
+    return [Point(unique_list[i], unique_list[mid + i])
+            for i in range(size)]

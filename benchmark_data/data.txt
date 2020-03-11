@@ -50,7 +50,7 @@ n input timings (seconds)
 
 BRUTEFORCE VS RECURSION
 
-Generating identical list for random and unique points for  bruteforce and recursion...
+Generating identical list for random and unique points for bruteforce and recursion...
 
 BRUTEFORCE
 

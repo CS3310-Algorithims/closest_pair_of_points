@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 import random
 import time
 
-from closest_pair_point import Point, bf_closest_pair, closest_pair
+from closest_pair_points import Point, bf_closest_pair, closest_pair,\
+    get_unique_list_points
 
 
 class Benchmark(object):
@@ -52,24 +53,6 @@ class Benchmark(object):
 
         return True
 
-    def get_unique_list_points(self, size):
-        """Generate list of random and unique points
-
-        Parameters
-        ----------
-        size (int): size of desired list
-
-        Return
-        ------
-        list of unique Points
-        """
-        # generate unique list of size twice of size using random.sample()
-        unique_list = random.sample(range(0, 3 * size), 2 * size)
-        mid = len(unique_list) // 2
-
-        return [Point(unique_list[i], unique_list[mid + i])
-                for i in range(size)]
-
     def bruteforce(self, fig=1):
         """
         Benchmarks bruteforce version of closest pair of points
@@ -89,7 +72,7 @@ class Benchmark(object):
         print("\nGenerating random and unique list of points...")
         for i in range(sample_size):
             # generate list of unique Points
-            unique_points = self.get_unique_list_points(n[i])
+            unique_points = get_unique_list_points(n[i])
 
             # add to benchmarking lists
             lists_bf.append(unique_points)
@@ -145,7 +128,7 @@ class Benchmark(object):
         print("\nGenerating random and unique list of points...")
         for i in range(sample_size):
             # generate list of unique Points
-            unique_points = self.get_unique_list_points(n[i])
+            unique_points = get_unique_list_points(n[i])
 
             # add to benchmarking lists
             lists_re.append(unique_points)
@@ -204,10 +187,10 @@ class Benchmark(object):
         # generate lists of lists
         print("\nBRUTEFORCE VS RECURSION\n\n"
               "Generating identical list for random and unique points for "
-              " bruteforce and recursion...")
+              "bruteforce and recursion...")
         for i in range(sample_size):
             # generate list of unique Points
-            unique_points = self.get_unique_list_points(n[i])
+            unique_points = get_unique_list_points(n[i])
 
             # add to benchmarking lists
             lists_bf.append(unique_points)
