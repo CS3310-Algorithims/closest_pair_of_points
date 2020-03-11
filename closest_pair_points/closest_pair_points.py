@@ -209,15 +209,17 @@ def strip_closest(strip_list, min_pair):
     strip_list (list): A strip of list of Points of distance from minimal pair
     min_pair (dict): Minimal distance of two Points
 
-    Note
-    ----
+    Correctness Proof
+    -----------------
     Need to only compare at most 7 comparisons per point by correctness proof
 
-    Let d = delta. Then let a strip bisect the middle of two list. The strip
-    has been pre-sorted by y-coordinate, which is required for this proof.
+    Let a list be bisected into two halves.
+    Let d = delta, the closest pair's distance of two halves in the list.
+    Then create a strip from the middle to delta distance on either side.
+    This strip has been pre-sorted by y-coordinate.
+    Populate points where x-coord from middle to within delta distance.
 
-    Most points are at least d wide because delta is the minimal distance of
-    both sides of the list. Hence, in a d x 2d rectangle, there can only
+    Because the points are within d, then in a d x 2d rectangle, there can only
     be 1 point per d/2 x d/2 square.
 
     Therefore, a point can have at most 7 points to compare to find a new pair
@@ -225,28 +227,22 @@ def strip_closest(strip_list, min_pair):
     Because the strip has already been sorted by y-coordinate, you only need
     to iterate a point to 7 other sequential point comparisons.
 
-           y-coord
-           | 
-        d  |
-         __|__
-        |__|__|
-    2d  |__|__|
-        |__|__|
-    ____|__|__|____ x-coord
-           |
-           |
-
-    Example
-    -------
-    Let's compare point x to every other point in the rectangle, which is at
+    Illustration
+    ------------
+    Let's consider a rectangle of d by 2d in the strip along the middle.
+    Let's compare point X to every other point in the rectangle, which is at
     most 7 points.
 
-        d
-         __ __
-        |1_|2_|
-    2d  |x_|3_|
-        |4_|5_|
-        |6_|7_|
+                  y-coord
+                    |
+            --------|--------      
+            :       |       :
+            :       |       :   <--- strip
+            :___ ___|___ ___:   
+     d high |_1_|_2_|_3_|_4_|
+     ___ ___|_5_|_X_|_6_|_7_|___ ___ x-coord
+            :               :
+            :<-- 2d wide -->:
 
     Return
     ------

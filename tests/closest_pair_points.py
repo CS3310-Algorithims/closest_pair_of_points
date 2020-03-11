@@ -103,6 +103,20 @@ class TestSort(unittest.TestCase):
             self.assertEqual(bf_min["distance"], 0)
             self.assertEqual(re_min["distance"], 0)
 
+    def test_bruteforce_matches_recursion_n1000(self):
+        n = 1000
+        repeat = 100
+
+        # gen list of lists
+        for i in range(repeat):
+            bf_list = get_unique_list_points(n)
+            re_list = copy.deepcopy(bf_list)
+
+            bf_min = bf_closest_pair(re_list)
+            re_min = closest_pair(re_list)
+
+            self.assertEqual(bf_min["distance"], re_min["distance"])
+
 
 if __name__ == "__main__":
     unittest.main()
