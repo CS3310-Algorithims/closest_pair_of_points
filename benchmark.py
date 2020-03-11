@@ -16,7 +16,7 @@ class Benchmark(object):
         - Tower of Hanoi benchmark
         - Matrix multiplication benchmark
     """
-    random.seed(0)
+    random.seed(time.time())
 
     def run(self, choice=-1):
         """
@@ -31,19 +31,17 @@ class Benchmark(object):
         False if invalid choice, else True.
         """
         # array of benchmark methods
-        benchmarks = [self.closest_pair_points]
+        benchmarks = [self.bruteforce,
+                      self.recursive, self.closest_pair_points]
 
         # try to convert choice to int
         try:
             choice = int(choice)
         except:
-            choice = -1 if choice == "A" or choice == "a" else 0
+            choice = -1
 
         # run benchmark methods
-        if(choice == -1):
-            for i in range(len(benchmarks)):
-                benchmarks[i](i + 1)
-        elif(choice >= 1 and choice <= len(benchmarks)):
+        if(choice >= 1 and choice <= len(benchmarks)):
             benchmarks[choice-1](choice)
         else:
             return False
@@ -54,9 +52,139 @@ class Benchmark(object):
 
         return True
 
-    def closest_pair_points(self, fig=1):
+    def get_unique_list_points(self, size):
+        """Generate list of random and unique points
+
+        Parameters
+        ----------
+        size (int): size of desired list
+
+        Return
+        ------
+        list of unique Points
         """
-        Benchmarks sorting functions
+        # generate unique list of size twice of size using random.sample()
+        unique_list = random.sample(range(0, 3 * size), 2 * size)
+        mid = len(unique_list) // 2
+
+        return [Point(unique_list[i], unique_list[mid + i])
+                for i in range(size)]
+
+    def bruteforce(self, fig=1):
+        """
+        Benchmarks bruteforce version of closest pair of points
+
+        Parameters
+        ----------
+        fig (int): Figure number for plot
+        """
+        sample_size = 13
+
+        # x and y cooardinates for graphs
+        n = [2**(i + 1) for i in range(sample_size)]
+        timings_bruteforce = []
+        lists_bf = []
+
+        # generate lists of lists
+        print("\nGenerating random and unique list of points...")
+        for i in range(sample_size):
+            # generate list of unique Points
+            unique_points = self.get_unique_list_points(n[i])
+
+            # add to benchmarking lists
+            lists_bf.append(unique_points)
+
+        # headings variables
+        heading1 = "n input"
+        heading2 = "timings (seconds)"
+        pad_size = len(heading1) if len(
+            str(n[-1])) < len(heading1) else len(str(n[-1]))
+        sep = "-"
+
+        # benchmark bruteforce via lists
+        print("\nBRUTEFORCE\n\n"
+              f"{heading1:<{pad_size}} {heading2}\n"
+              f"{sep * pad_size:<{pad_size}} {sep * len(heading2)}")
+
+        for i in range(len(lists_bf)):
+            # benchmarking
+            start_time = time.perf_counter()
+            answer = bf_closest_pair(lists_bf[i])
+            end_time = time.perf_counter()
+
+            # add time diff to timings
+            duration = end_time - start_time
+            timings_bruteforce.append(duration)
+
+            print(f"{n[i]:<{pad_size}} {duration}")
+
+        # graph results
+        plt.figure(fig)
+        plt.plot(n, timings_bruteforce, label="Bruteforce")
+        plt.xlabel('input size (n)')
+        plt.ylabel('timings (seconds)')
+        plt.title('Growth Rates: Bruteforce')
+        plt.legend()  # show legend
+
+    def recursive(self, fig=2):
+        """
+        Benchmarks recursive version of closest pair of points
+
+        Parameters
+        ----------
+        fig (int): Figure number for plot
+        """
+        sample_size = 13
+
+        # x and y cooardinates for graphs
+        n = [2**(i + 1) for i in range(sample_size)]
+        timings_recursive = []
+        lists_re = []
+
+        # generate lists of lists
+        print("\nGenerating random and unique list of points...")
+        for i in range(sample_size):
+            # generate list of unique Points
+            unique_points = self.get_unique_list_points(n[i])
+
+            # add to benchmarking lists
+            lists_re.append(unique_points)
+
+        # headings variables
+        heading1 = "n input"
+        heading2 = "timings (seconds)"
+        pad_size = len(heading1) if len(
+            str(n[-1])) < len(heading1) else len(str(n[-1]))
+        sep = "-"
+
+        # benchmark recursive via lists_copy
+        print("\nRECURSIVE\n\n"
+              f"{heading1:<{pad_size}} {heading2}\n"
+              f"{sep * pad_size:<{pad_size}} {sep * len(heading2)}")
+
+        for i in range(len(lists_re)):
+            # benchmarking
+            start_time = time.perf_counter()
+            answer = closest_pair(lists_re[i])
+            end_time = time.perf_counter()
+
+            # add time diff to timings
+            duration = end_time - start_time
+            timings_recursive.append(duration)
+
+            print(f"{n[i]:<{pad_size}} {duration}")
+
+        # graph results
+        plt.figure(fig)
+        plt.plot(n, timings_recursive, label="Recursive")
+        plt.xlabel('input size (n)')
+        plt.ylabel('timings (seconds)')
+        plt.title('Growth Rates: Recursive')
+        plt.legend()  # show legend
+
+    def closest_pair_points(self, fig=3):
+        """
+        Benchmarks bruteforce vs recursive of closest pair of points
 
         Parameters
         ----------
@@ -74,16 +202,12 @@ class Benchmark(object):
         re_ansewrs = []
 
         # generate lists of lists
-        print("\nGenerating unique, identical lists for bruteforce and "
-              "recursion...")
+        print("\nBRUTEFORCE VS RECURSION\n\n"
+              "Generating identical list for random and unique points for "
+              " bruteforce and recursion...")
         for i in range(sample_size):
-            # generate unique list of size twice of n[i] using random.sample()
-            unique_list = random.sample(range(0, 3 * n[i]), 2 * n[i])
-            mid = len(unique_list) // 2
-
             # generate list of unique Points
-            unique_points = [Point(unique_list[i], unique_list[mid + i])
-                             for i in range(n[i])]
+            unique_points = self.get_unique_list_points(n[i])
 
             # add to benchmarking lists
             lists_bf.append(unique_points)
@@ -159,9 +283,11 @@ class Benchmark(object):
 
 
 if __name__ == "__main__":
-    menu = "\nWhich task to benchmark?\n"\
-        "1: Closest Pair of Points\n"\
-        "A: Run all benchmarks\n"\
+    menu = "\nCLOSEST PAIR OF POINTS\n"\
+        "\nWhich task to benchmark?\n"\
+        "1: Bruteforce\n"\
+        "2: Recursion\n"\
+        "3: Bruteforce vs. Recursion\n"\
         "X: Exit\n"
 
     while(True):

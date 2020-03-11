@@ -147,8 +147,7 @@ def closest(list_x, low, high, list_y):
     min_pair = min_of_pairs(min_pair_left, min_pair_right)
 
     # find the delta of current strip: from the middle of [low to high]
-    strip_mid = (low + high) // 2
-    delta = list_x[strip_mid].x + min_pair["distance"]
+    delta = list_x[mid].x + min_pair["distance"]
 
     # build strip array to find points smaller than delta
     strip = []
