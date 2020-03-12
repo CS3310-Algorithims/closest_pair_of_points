@@ -5,8 +5,7 @@ import copy
 import random
 import unittest
 
-from closest_pair_points import Point, bf_closest_pair, closest_pair,\
-    get_unique_points
+from closest_pair_points import Point, bf_closest_pair, closest_pair
 
 
 class TestClosestPairPoints(unittest.TestCase):
@@ -81,7 +80,7 @@ class TestClosestPairPoints(unittest.TestCase):
     def test_bruteforce_matches_recursion(self):
         # gen list of lists
         for i in range(5, 100):
-            bf_list = get_unique_points(i)
+            bf_list = Point.get_unique_points(i)
             re_list = copy.deepcopy(bf_list)
 
             bf_min = bf_closest_pair(re_list)
@@ -93,7 +92,7 @@ class TestClosestPairPoints(unittest.TestCase):
     def test_bruteforce_matches_recursion_w_dups(self):
         # gen list of lists
         for i in range(5, 100):
-            bf_list = get_unique_points(i)
+            bf_list = Point.get_unique_points(i)
             bf_list.append(copy.deepcopy(bf_list[0]))  # add duplicate point
             re_list = copy.deepcopy(bf_list)
 
@@ -109,7 +108,7 @@ class TestClosestPairPoints(unittest.TestCase):
 
         # gen list of lists
         for i in range(repeat):
-            bf_list = get_unique_points(n)
+            bf_list = Point.get_unique_points(n)
             re_list = copy.deepcopy(bf_list)
 
             bf_min = bf_closest_pair(re_list)

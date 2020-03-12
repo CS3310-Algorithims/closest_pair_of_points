@@ -51,7 +51,7 @@ class Point(object):
                          (point_a.y - point_b.y)**2)
 
     @staticmethod
-    def two_pairs_equal(pairs_a, pairs_b):
+    def is_two_pairs_equal(pairs_a, pairs_b):
         """
         Compare if two tuple of Points are equal.
 
@@ -60,7 +60,17 @@ class Point(object):
         pairs_a (tuple of Points): First tuple of Points
         pairs_b (tuple of Points): Second tuple of Points
         """
-        return pairs_a[0] == pairs_b[0] or pairs_a[0] == pairs_b[1]
+        return (pairs_a[0] == pairs_b[0] and pairs_a[1] == pairs_b[1]) or \
+            (pairs_a[0] == pairs_b[1] and pairs_a[1] == pairs_b[0])
+
+    @staticmethod
+    def get_unique_points(size):
+        """Generate list of random and unique points"""
+        # generate unique list of size twice of size using random.sample()
+        uniques = random.sample(range(0, 3 * size), 2 * size)
+        mid = len(uniques) // 2
+
+        return [Point(uniques[i], uniques[mid + i]) for i in range(size)]
 
 
 def bf_closest_pair(points):
@@ -99,7 +109,7 @@ def bf_closest(points, low, high):
 
     # set minimal pair as the first two elements
     min_dist = Point.distance(points[low], points[low + 1])
-    min_pair = (points[low], points[low + 1])
+    min_points = (points[low], points[low + 1])
 
     # iterate if points has more than 2 elements
     if high - low > 1:
@@ -109,9 +119,9 @@ def bf_closest(points, low, high):
 
                 if dist < min_dist:
                     min_dist = dist
-                    min_pair = (points[i], points[j])
+                    min_points = (points[i], points[j])
 
-    return {"distance": min_dist, "pair": min_pair}
+    return {"distance": min_dist, "pair": min_points}
 
 
 def closest_pair(points):
@@ -204,8 +214,8 @@ def strip_closest(strip, min_pair):
 
     Parameters
     ----------
-    strip (list): A strip of list of Point of dist from minimal pair
-    min_pair (dict): Minimal dist of two Points
+    strip (list): A strip of list of Point of distance from minimal pair
+    min_pair (dict): Minimal distance of two Points
 
     Correctness Proof
     -----------------
@@ -246,34 +256,16 @@ def strip_closest(strip, min_pair):
     ------
     {"distance": float, "pair": Point}
     """
-    strip_min_pair = min_pair
+    strip_min_dist = min_pair["distance"]
+    strip_min_points = min_pair["pair"]
 
     for i in range(len(strip) - 1):  # skip last element compare
         for j in range(i + 1, min(i + 7, len(strip))):
             # find new strip min pair
             dist = Point.distance(strip[i], strip[j])
 
-            if dist < strip_min_pair["distance"]:
-                strip_min_pair = {"distance": dist,
-                                  "pair": (strip[i], strip[j])}
+            if dist < strip_min_dist:
+                strip_min_dist = dist
+                strip_min_points = (strip[i], strip[j])
 
-    return strip_min_pair
-
-
-def get_unique_points(size):
-    """
-    Generate list of random and unique points
-
-    Parameters
-    ----------
-    size (int): size of desired list
-
-    Return
-    ------
-    list of unique Points
-    """
-    # generate unique list of size twice of size using random.sample()
-    unique_list = random.sample(range(0, 3 * size), 2 * size)
-    mid = len(unique_list) // 2
-
-    return [Point(unique_list[i], unique_list[mid + i]) for i in range(size)]
+    return {"distance": strip_min_dist, "pair": strip_min_points}
