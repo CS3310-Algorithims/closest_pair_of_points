@@ -3,8 +3,8 @@ Closest Pair of Point module
     - Point class
     - Bruteforce closest pair of points
     - Recursive closest pair of points
+    - Util to generate a list of random and unique Points
 """
-
 import math
 import random
 
@@ -44,6 +44,18 @@ class Point(object):
 
     def __truediv__(self, o):
         return Point(self.x / o.x, self.y / o.y)
+
+    @staticmethod
+    def two_pairs_equal(pairs_a, pairs_b):
+        """
+        Compare if two tuple of Points are equal.
+
+        Parameters
+        ----------
+        pairs_a (tuple of Points): First tuple of Points
+        pairs_b (tuple of Points): Second tuple of Points
+        """
+        return pairs_a[0] == pairs_b[0] or pairs_a[0] == pairs_b[1]
 
 
 def dist(point_a, point_b):
@@ -173,10 +185,8 @@ def closest(list_x, low, high, list_y):
     # get minimal pair of the two parts
     min_pair = min_of_pairs(min_pair_left, min_pair_right)
 
-    # create strip array where all points are within delta distance
-    delta = min_pair["distance"]
-
     # build strip array to find points smaller than delta
+    delta = min_pair["distance"]
     strip = []
     for i in range(len(list_y)):
         if(abs(list_y[i].x - mid_point.x) < delta):
@@ -191,10 +201,7 @@ def closest(list_x, low, high, list_y):
 
 def min_of_pairs(pair_a, pair_b):
     """Return closest pair of Points of two pair of Points"""
-    if(pair_a["distance"] <= pair_b["distance"]):
-        return pair_a
-    else:
-        return pair_b
+    return pair_a if pair_a["distance"] <= pair_b["distance"] else pair_b
 
 
 def strip_closest(strip_list, min_pair):
@@ -235,14 +242,14 @@ def strip_closest(strip_list, min_pair):
 
                   y-coord
                     |
-            --------|--------      
-            :       |       :
-            :       |       :   <--- strip
-            :___ ___|___ ___:   
+            . . . . | . . . .      
+            .       |       .
+            .       |       .   <--- strip
+            .___ ___|___ ___.   
      d high |_1_|_2_|_3_|_4_|
      ___ ___|_5_|_X_|_6_|_7_|___ ___ x-coord
-            :               :
-            :<-- 2d wide -->:
+            .       |       .
+            .<-- 2d wide -->.
 
     Return
     ------
@@ -255,6 +262,7 @@ def strip_closest(strip_list, min_pair):
         for j in range(i + 1, min(i + 7, len(strip_list))):
             # find new strip min pair
             distance = dist(strip_list[i], strip_list[j])
+
             if(distance < strip_min_pair["distance"]):
                 strip_min_pair = {"distance": distance,
                                   "pair": (strip_list[i], strip_list[j])}
@@ -263,7 +271,8 @@ def strip_closest(strip_list, min_pair):
 
 
 def get_unique_list_points(size):
-    """Generate list of random and unique points
+    """
+    Generate list of random and unique points
 
     Parameters
     ----------
@@ -277,5 +286,4 @@ def get_unique_list_points(size):
     unique_list = random.sample(range(0, 3 * size), 2 * size)
     mid = len(unique_list) // 2
 
-    return [Point(unique_list[i], unique_list[mid + i])
-            for i in range(size)]
+    return [Point(unique_list[i], unique_list[mid + i]) for i in range(size)]

@@ -1,7 +1,6 @@
 """
 Group Project - Closest Pair of Points
 """
-
 from closest_pair_points import Point, bf_closest_pair, closest_pair
 
 
