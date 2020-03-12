@@ -9,7 +9,7 @@ from closest_pair_points import Point, bf_closest_pair, closest_pair,\
     get_unique_points
 
 
-class TestSort(unittest.TestCase):
+class TestClosestPairPoints(unittest.TestCase):
     """
     Tests for agent.
     """

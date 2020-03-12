@@ -42,7 +42,7 @@ class Benchmark(object):
             choice = -1
 
         # run benchmark methods
-        if(choice >= 1 and choice <= len(benchmarks)):
+        if choice >= 1 and choice <= len(benchmarks):
             benchmarks[choice-1](choice)
         else:
             return False
@@ -249,7 +249,7 @@ class Benchmark(object):
 
         answer_dist_matches = True
         for i in range(len(bf_answers)):
-            if(bf_answers[i]["distance"] != re_ansewrs[i]["distance"]):
+            if bf_answers[i]["distance"] != re_ansewrs[i]["distance"]:
                 answer_dist_matches = False
                 break
 
@@ -277,11 +277,11 @@ if __name__ == "__main__":
         print(menu)
         choice = input()
 
-        if(choice != "X" and choice != "x"):
+        if choice != "X" and choice != "x":
             # run benchmark with choice number
             valid = Benchmark().run(choice)
 
-            if(not valid):
+            if not valid:
                 print("Invalid choice")
         else:
             break

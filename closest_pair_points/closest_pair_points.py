@@ -94,7 +94,7 @@ def bf_closest(points, low, high):
     {"distance": float, "pair": Point}
     """
     # raise exception if points is less than 2 elements (high is inclusive)
-    if(high - low <= 0):
+    if high - low <= 0:
         raise IndexError()
 
     # set minimal pair as the first two elements
@@ -102,12 +102,12 @@ def bf_closest(points, low, high):
     min_pair = (points[low], points[low + 1])
 
     # iterate if points has more than 2 elements
-    if(high - low > 1):
+    if high - low > 1:
         for i in range(low, high):  # skip last element compare b/c redundant
             for j in range(i + 1, high + 1):
                 dist = Point.distance(points[i], points[j])
 
-                if(dist < min_dist):
+                if dist < min_dist:
                     min_dist = dist
                     min_pair = (points[i], points[j])
 
@@ -153,7 +153,7 @@ def closest(points_xsorted, low, high, points_ysorted):
     {"distance": float, "pair": Point}
     """
     # base case: use brute force on size 3 or less
-    if(high - low + 1 <= 3):
+    if high - low + 1 <= 3:
         return bf_closest(points_xsorted, low, high)
 
     # initializations
@@ -164,7 +164,7 @@ def closest(points_xsorted, low, high, points_ysorted):
 
     # split points_ysorted by middle of points_xsorted's midpoint
     for point in points_ysorted:
-        if(point.x <= mid_point.x):
+        if point.x <= mid_point.x:
             points_yleft.append(point)
         else:
             points_yright.append(point)
@@ -180,7 +180,7 @@ def closest(points_xsorted, low, high, points_ysorted):
     delta = min_pair["distance"]
     strip = []
     for point in points_ysorted:
-        if(abs(point.x - mid_point.x) < delta):
+        if abs(point.x - mid_point.x) < delta:
             strip.append(point)
 
     # get strip's min pair
@@ -253,7 +253,7 @@ def strip_closest(strip, min_pair):
             # find new strip min pair
             dist = Point.distance(strip[i], strip[j])
 
-            if(dist < strip_min_pair["distance"]):
+            if dist < strip_min_pair["distance"]:
                 strip_min_pair = {"distance": dist,
                                   "pair": (strip[i], strip[j])}
 
