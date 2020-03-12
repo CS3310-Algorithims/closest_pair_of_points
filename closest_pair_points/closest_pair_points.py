@@ -3,7 +3,6 @@ Closest Pair of Point module
     - Point class
     - Bruteforce closest pair of points
     - Recursive closest pair of points
-    - Util to generate a list of random and unique Points
 """
 import math
 import random
@@ -46,6 +45,12 @@ class Point(object):
         return Point(self.x / o.x, self.y / o.y)
 
     @staticmethod
+    def distance(point_a, point_b):
+        """Return dist of two points"""
+        return math.sqrt((point_a.x - point_b.x)**2 +
+                         (point_a.y - point_b.y)**2)
+
+    @staticmethod
     def two_pairs_equal(pairs_a, pairs_b):
         """
         Compare if two tuple of Points are equal.
@@ -58,71 +63,60 @@ class Point(object):
         return pairs_a[0] == pairs_b[0] or pairs_a[0] == pairs_b[1]
 
 
-def dist(point_a, point_b):
-    """Return distance of two points"""
-    return math.sqrt(
-        math.pow(point_a.x - point_b.x, 2) +
-        math.pow(point_a.y - point_b.y, 2)
-    )
-
-
-def bf_closest_pair(list):
+def bf_closest_pair(points):
     """
-    Wrapper for bruteforce approach to get minimal distance of two points in
-    list.
+    Wrapper for bruteforce approach to get minimal distance of two points.
 
-    list (list): List of Points
+    points (list): List of Point
 
     Return
     ------
-    dict of "distance" (float) and "pair" (tuple of Point):
-        minimal distance and two Points
+    {"distance": float, "pair": Point}
     """
-    return bf_closest(list, 0, len(list) - 1)
+    return bf_closest(points, 0, len(points) - 1)
 
 
-def bf_closest(list, low, high):
+def bf_closest(points, low, high):
     """
-    Bruteforce approach to get minimal distance of two points in list.
+    Bruteforce approach to get minimal distance of two points.
     Minumum size is 2 (high - low >= 1), else exception IndexError is raised.
 
     Time Complexity: O(n^2)
 
     Parameters
     ----------
-    list (list): List of Points
+    points (list): List of Point
     low (int): Start index (inclusive)
     high (int): End index (inclusive)
 
     Return
     ------
-    dict of "distance" (float) and "pair" (tuple of Point):
-        minimal distance and two Points
+    {"distance": float, "pair": Point}
     """
-    # raise exception if list is less than 2 elements (high is inclusive)
+    # raise exception if points is less than 2 elements (high is inclusive)
     if(high - low <= 0):
         raise IndexError()
 
     # set minimal pair as the first two elements
-    min_dist = dist(list[low], list[low + 1])
-    min_pair = (list[low], list[low + 1])
+    min_dist = Point.distance(points[low], points[low + 1])
+    min_pair = (points[low], points[low + 1])
 
-    # iterate if list has more than 2 elements
+    # iterate if points has more than 2 elements
     if(high - low > 1):
         for i in range(low, high):  # skip last element compare b/c redundant
             for j in range(i + 1, high + 1):
-                distance = dist(list[i], list[j])
+                dist = Point.distance(points[i], points[j])
 
-                if(distance < min_dist):
-                    min_dist = distance
-                    min_pair = (list[i], list[j])
+                if(dist < min_dist):
+                    min_dist = dist
+                    min_pair = (points[i], points[j])
 
     return {"distance": min_dist, "pair": min_pair}
 
 
-def closest_pair(list):
+def closest_pair(points):
     """
-    Find closest pair in list.
+    Find closest pair in points.
 
     Timsort: O(nlogn)
     Closest: O(nlogn)
@@ -130,57 +124,54 @@ def closest_pair(list):
 
     Return
     ------
-    dict of "distance" (float) and "pair" (tuple of Point):
-        minimal distance and two Points
+    {"distance": float, "pair": Point}
     """
-    # sort list by x and y into distance lists via python's Timsort: O(nlogn)
-    list_x = sorted(list, key=lambda e: e.x)
-    list_y = sorted(list, key=lambda e: e.y)
+    # sort points by x and y via python's Timsort: O(nlogn)
+    points_xsorted = sorted(points, key=lambda e: e.x)
+    points_ysorted = sorted(points, key=lambda e: e.y)
 
-    return closest(list_x, 0, len(list_x) - 1, list_y)
+    return closest(points_xsorted, 0, len(points_xsorted) - 1, points_ysorted)
 
 
-def closest(list_x, low, high, list_y):
+def closest(points_xsorted, low, high, points_ysorted):
     """
-    Recursively find closest pair of Point in list_x, sorted by x-coordinate
-    and list_y, sorted by y-coordinate. Both list_x and list_y are identical
-    except sorted by different coordinates.
+    Recursively find the closest pair of points in points_xsorted and with
+    points_ysorted for the strip in the middle.
 
     Recurrence relation: T(n) = 2T(n/2) + n
     Time Complexity: O(nlogn)
 
     Parameters
     ----------
-    list_x (list): List of Points sorted by x-coordinate
-    low (int): Start index for list_x (inclusive)
-    high (int): End index for list_x (inclusive)
-    list_y: List of Points sorted by y-coordinate
+    points_xsorted (list): List of Point sorted by x-coordinate
+    low (int): Start index for points_xsorted (inclusive)
+    high (int): End index for points_xsorted (inclusive)
+    points_ysorted (list): List of Point sorted by y-coordinate
 
     Return
     ------
-    dict of "distance" (float) and "pair" (tuple of Point):
-        minimal distance and two Points
+    {"distance": float, "pair": Point}
     """
     # base case: use brute force on size 3 or less
     if(high - low + 1 <= 3):
-        return bf_closest(list_x, low, high)
+        return bf_closest(points_xsorted, low, high)
 
     # initializations
     mid = (low + high) // 2
-    mid_point = list_x[mid]
-    list_y_left = []
-    list_y_right = []
+    mid_point = points_xsorted[mid]
+    points_yleft = []
+    points_yright = []
 
-    # split list_y by middle of list_x's midpoint
-    for i in range(len(list_y)):
-        if(list_y[i].x <= mid_point.x):
-            list_y_left.append(list_y[i])
+    # split points_ysorted by middle of points_xsorted's midpoint
+    for point in points_ysorted:
+        if(point.x <= mid_point.x):
+            points_yleft.append(point)
         else:
-            list_y_right.append(list_y[i])
+            points_yright.append(point)
 
     # recurse
-    min_pair_left = closest(list_x, low, mid, list_y_left)
-    min_pair_right = closest(list_x, mid + 1, high, list_y_right)
+    min_pair_left = closest(points_xsorted, low, mid, points_yleft)
+    min_pair_right = closest(points_xsorted, mid + 1, high, points_yright)
 
     # get minimal pair of the two parts
     min_pair = min_of_pairs(min_pair_left, min_pair_right)
@@ -188,9 +179,9 @@ def closest(list_x, low, high, list_y):
     # build strip array to find points smaller than delta
     delta = min_pair["distance"]
     strip = []
-    for i in range(len(list_y)):
-        if(abs(list_y[i].x - mid_point.x) < delta):
-            strip.append(list_y[i])
+    for point in points_ysorted:
+        if(abs(point.x - mid_point.x) < delta):
+            strip.append(point)
 
     # get strip's min pair
     strip_min_pair = strip_closest(strip, min_pair)
@@ -204,17 +195,17 @@ def min_of_pairs(pair_a, pair_b):
     return pair_a if pair_a["distance"] <= pair_b["distance"] else pair_b
 
 
-def strip_closest(strip_list, min_pair):
+def strip_closest(strip, min_pair):
     """
-    Find closest pair in strip_list
+    Find closest pair in strip.
 
     Recurrence relation: T(n) = 7n
     Time Complexity: O(n)
 
     Parameters
     ----------
-    strip_list (list): A strip of list of Points of distance from minimal pair
-    min_pair (dict): Minimal distance of two Points
+    strip (list): A strip of list of Point of dist from minimal pair
+    min_pair (dict): Minimal dist of two Points
 
     Correctness Proof
     -----------------
@@ -253,24 +244,23 @@ def strip_closest(strip_list, min_pair):
 
     Return
     ------
-    dict of "distance" (float) and "pair" (tuple of Point):
-        minimal distance and two Points
+    {"distance": float, "pair": Point}
     """
     strip_min_pair = min_pair
 
-    for i in range(len(strip_list) - 1):  # skip last element compare
-        for j in range(i + 1, min(i + 7, len(strip_list))):
+    for i in range(len(strip) - 1):  # skip last element compare
+        for j in range(i + 1, min(i + 7, len(strip))):
             # find new strip min pair
-            distance = dist(strip_list[i], strip_list[j])
+            dist = Point.distance(strip[i], strip[j])
 
-            if(distance < strip_min_pair["distance"]):
-                strip_min_pair = {"distance": distance,
-                                  "pair": (strip_list[i], strip_list[j])}
+            if(dist < strip_min_pair["distance"]):
+                strip_min_pair = {"distance": dist,
+                                  "pair": (strip[i], strip[j])}
 
     return strip_min_pair
 
 
-def get_unique_list_points(size):
+def get_unique_points(size):
     """
     Generate list of random and unique points
 

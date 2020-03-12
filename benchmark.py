@@ -7,7 +7,7 @@ import random
 import time
 
 from closest_pair_points import Point, bf_closest_pair, closest_pair,\
-    get_unique_list_points
+    get_unique_points
 
 
 class Benchmark(object):
@@ -72,7 +72,7 @@ class Benchmark(object):
         print("\nGenerating random and unique list of points...")
         for i in range(sample_size):
             # generate list of unique Points
-            unique_points = get_unique_list_points(n[i])
+            unique_points = get_unique_points(n[i])
 
             # add to benchmarking lists
             lists_bf.append(unique_points)
@@ -128,7 +128,7 @@ class Benchmark(object):
         print("\nGenerating random and unique list of points...")
         for i in range(sample_size):
             # generate list of unique Points
-            unique_points = get_unique_list_points(n[i])
+            unique_points = get_unique_points(n[i])
 
             # add to benchmarking lists
             lists_re.append(unique_points)
@@ -190,7 +190,7 @@ class Benchmark(object):
               "bruteforce and recursion...")
         for i in range(sample_size):
             # generate list of unique Points
-            unique_points = get_unique_list_points(n[i])
+            unique_points = get_unique_points(n[i])
 
             # add to benchmarking lists
             lists_bf.append(unique_points)
