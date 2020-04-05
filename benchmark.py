@@ -11,10 +11,10 @@ from closest_pair_points import Point, bf_closest_pair, closest_pair
 
 class Benchmark(object):
     """
-    Benchmark class:
-        - Sorting benchmark
-        - Tower of Hanoi benchmark
-        - Matrix multiplication benchmark
+    Benchmark for Closest Pair of Points:
+        - Bruteforce
+        - Recursive
+        - Bruteforce vs Recursive
     """
     random.seed(time.time())
 
@@ -272,7 +272,7 @@ if __name__ == "__main__":
         "3: Bruteforce vs. Recursion\n"\
         "X: Exit\n"
 
-    while(True):
+    while True:
         print(menu)
         choice = input()
 

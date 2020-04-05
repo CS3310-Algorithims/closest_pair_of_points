@@ -1,8 +1,7 @@
 """
-Unit tests for sort module
+Unit tests
 """
 import copy
-import random
 import unittest
 
 from closest_pair_points import Point, bf_closest_pair, closest_pair
@@ -10,7 +9,7 @@ from closest_pair_points import Point, bf_closest_pair, closest_pair
 
 class TestClosestPairPoints(unittest.TestCase):
     """
-    Tests for agent.
+    Tests for cloest pair of points
     """
     # class attributes
 

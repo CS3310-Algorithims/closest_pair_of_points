@@ -137,8 +137,8 @@ def closest_pair(points):
     {"distance": float, "pair": Point}
     """
     # sort points by x and y via python's Timsort: O(nlogn)
-    points_xsorted = sorted(points, key=lambda e: e.x)
-    points_ysorted = sorted(points, key=lambda e: e.y)
+    points_xsorted = sorted(points, key=lambda point: point.x)
+    points_ysorted = sorted(points, key=lambda point: point.y)
 
     return closest(points_xsorted, 0, len(points_xsorted) - 1, points_ysorted)
 
@@ -169,8 +169,7 @@ def closest(points_xsorted, low, high, points_ysorted):
     # initializations
     mid = (low + high) // 2
     mid_point = points_xsorted[mid]
-    points_yleft = []
-    points_yright = []
+    points_yleft, points_yright = [], []
 
     # split points_ysorted by middle of points_xsorted's midpoint
     for point in points_ysorted:
@@ -179,24 +178,24 @@ def closest(points_xsorted, low, high, points_ysorted):
         else:
             points_yright.append(point)
 
-    # recurse
+    # recurse to find local minimal pairs on left and right
     min_pair_left = closest(points_xsorted, low, mid, points_yleft)
     min_pair_right = closest(points_xsorted, mid + 1, high, points_yright)
 
-    # get minimal pair of the two parts
+    # get the smaller of the two local minimal pairs
     min_pair = min_of_pairs(min_pair_left, min_pair_right)
 
-    # build strip array to find points smaller than delta
+    # build strip array to find points smaller than delta from x-coord to mid
     delta = min_pair["distance"]
     strip = []
     for point in points_ysorted:
         if abs(point.x - mid_point.x) < delta:
             strip.append(point)
 
-    # get strip's min pair
+    # try to find a pair that's smaller than min_pair in the strip
     strip_min_pair = strip_closest(strip, min_pair)
 
-    # return min of (min_pair, strip_min_pair)
+    # return the smaller of min_pair and strip_min_pair
     return min_of_pairs(min_pair, strip_min_pair)
 
 
@@ -247,8 +246,8 @@ def strip_closest(strip, min_pair):
             .       |       .
             .       |       .   <--- strip
             .___ ___|___ ___.   
-     d high |_1_|_2_|_3_|_4_|
-     ___ ___|_5_|_X_|_6_|_7_|___ ___ x-coord
+     d high |_4_|_5_|_6_|_7_|
+     ___ ___|_X_|_1_|_2_|_3_|___ ___ x-coord
             .       |       .
             .<-- 2d wide -->.
 
@@ -261,7 +260,6 @@ def strip_closest(strip, min_pair):
 
     for i in range(len(strip) - 1):  # skip last element compare
         for j in range(i + 1, min(i + 7, len(strip))):
-            # find new strip min pair
             dist = Point.distance(strip[i], strip[j])
 
             if dist < strip_min_dist:

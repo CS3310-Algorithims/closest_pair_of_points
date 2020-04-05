@@ -1,12 +1,12 @@
 """
-Group Project - Closest Pair of Points
+Group Project: Closest Pair of Points
 """
 from closest_pair_points import Point, bf_closest_pair, closest_pair
 
 
 class Run(object):
     """
-    Run closest pair of points program
+    Run closest pair of points
     """
 
     def closest_pair(self):
