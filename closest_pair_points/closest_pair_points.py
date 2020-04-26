@@ -17,32 +17,11 @@ class Point(object):
         self.x = x
         self.y = y
 
-    def __str__(self):
-        return f"({self.x}, {self.y})"
-
     def __repr__(self):
         return f"({self.x}, {self.y})"
 
     def __eq__(self, o):
         return self.x == o.x and self.y == o.y
-
-    def __ne__(self, o):
-        return self.x != o.x or self.y != o.y
-
-    def __add__(self, o):
-        return Point(self.x + o.x, self.y + o.y)
-
-    def __sub__(self, o):
-        return Point(self.x - o.x, self.y - o.y)
-
-    def __mul__(self, o):
-        return Point(self.x * o.x, self.y * o.y)
-
-    def __floordiv__(self, o):
-        return Point(self.x // o.x, self.y // o.y)
-
-    def __truediv__(self, o):
-        return Point(self.x / o.x, self.y / o.y)
 
     @staticmethod
     def distance(point_a, point_b):
@@ -122,6 +101,35 @@ def bf_closest(points, low, high):
                     min_points = (points[i], points[j])
 
     return {"distance": min_dist, "pair": min_points}
+
+
+def bf_pairs(points):
+    """
+    Creates a permutation list of all pairs of points with distance
+    Return [(Point, Point, float)]
+    """
+    return _bf_pairs(points, 0, len(points) - 1)
+
+
+def _bf_pairs(points, low, high):
+    """
+    Creates a permutation list of all pairs of points with distance
+    Return [(Point, Point, float)]
+    """
+    # raise exception if points is less than 2 elements (high is inclusive)
+    if high - low <= 0:
+        raise IndexError()
+
+    pairs = []
+
+    # iterate if points has more than 2 elements
+    if high - low > 1:
+        for i in range(low, high):  # skip last element compare b/c redundant
+            for j in range(i + 1, high + 1):
+                dist = Point.distance(points[i], points[j])
+                pairs.append((points[i], points[j], dist))
+
+    return pairs
 
 
 def closest_pair(points):

@@ -2,7 +2,9 @@
 
 ## Closest Pair of Points
 
-Program to find the closest pair of points in a list of points.
+Program to find the closest pair of points in a list of points using divide
+and conquer algorithm.
+
 Time Complexity: O(nlogn)
 
 ## Requirements
@@ -18,6 +20,4 @@ python3 -m run
 ## Team Members
 
 - Alex Tung
-- Jinho Lee
-- Qicheng Shuto
 - Thuan Tang
