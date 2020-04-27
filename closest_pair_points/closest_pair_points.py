@@ -134,7 +134,7 @@ def _bf_pairs(points, low, high):
 
 def closest_pair(points):
     """
-    Find closest pair in points.
+    Find closest pair in points using divide and conquer.
 
     Timsort: O(nlogn)
     Closest: O(nlogn)

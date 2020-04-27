@@ -77,6 +77,7 @@ class Run(object):
                 pass
 
     def bruteforce(self):
+        """Print all pair combinations via brute force"""
         print("BRUTE FORCE\n")
 
         if self.points:
@@ -87,6 +88,7 @@ class Run(object):
             print("Must have two or more points.")
 
     def recursion(self):
+        """Print the closest pair via divide and conquer"""
         print("RECURSION\n")
 
         if self.points:
