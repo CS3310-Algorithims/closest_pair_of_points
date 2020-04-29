@@ -3,7 +3,8 @@ Group Project: Closest Pair of Points
 """
 import os.path
 
-from closest_pair_points import Point, bf_closest_pair, closest_pair, bf_pairs
+from closest_pair_points import Point, bf_closest_pair, bf_pairs,\
+    closest_pair, closest_pair_plt
 
 
 class Run(object):
@@ -14,10 +15,11 @@ class Run(object):
         "1: List points\n"\
         "2: Bruteforce\n"\
         "3. Recursion\n"\
-        "4: Add points manually\n"\
-        "5: Add points from file\n"\
-        "6. Remove points\n"\
-        "7. Remove all points\n"\
+        "4. Recursion with Matplotlib\n"\
+        "5: Add points manually\n"\
+        "6: Add points from file\n"\
+        "7. Remove points\n"\
+        "8. Remove all points\n"\
         "X: Exit"
 
     def __init__(self):
@@ -62,15 +64,17 @@ class Run(object):
             elif choice == "3":
                 self.recursion()
             elif choice == "4":
-                self.add_manual()
+                self.recursion_plt()
             elif choice == "5":
+                self.add_manual()
+            elif choice == "6":
                 clear = self.input("Clear previous points? (Y/N)")
                 if clear == "Y" or clear == "y":
                     self.clear_points()
                 self.add_from_file()
-            elif choice == "6":
-                self.remove_points()
             elif choice == "7":
+                self.remove_points()
+            elif choice == "8":
                 self.clear_points()
             else:
                 self.print_points(self.points, "POINTS")
@@ -93,6 +97,33 @@ class Run(object):
 
         if self.points:
             result = closest_pair(self.points)
+            point1, point2 = result['pair']
+            dist = result['distance']
+            self.print_pairs([(point1, point2, dist)])
+        else:
+            print("Must have two or more points.")
+
+    def recursion_plt(self):
+        """Matpotlib visual for divide and conquer"""
+        subtitle = "RECURSION WITH MATPLOTLIB\n"
+        print(subtitle)
+
+        if self.points:
+            pause_t = 1.5
+
+            print("Recursion pause time (sec)?")
+            while True:
+                try:
+                    pause_t = float(self.input())
+                    break
+                except:
+                    print("Must be a number.")
+                    continue
+
+            self.clear_screen()
+            print(subtitle)
+
+            result = closest_pair_plt(self.points, pause_t)
             point1, point2 = result['pair']
             dist = result['distance']
             self.print_pairs([(point1, point2, dist)])

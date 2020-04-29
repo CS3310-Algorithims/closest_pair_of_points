@@ -9,7 +9,7 @@ Time Complexity: O(nlogn)
 
 ## Requirements
 
-Python3
+python3, matplotlib
 
 ## Command to start program
 

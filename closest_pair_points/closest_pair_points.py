@@ -56,6 +56,8 @@ def bf_closest_pair(points):
     """
     Wrapper for bruteforce approach to get minimal distance of two points.
 
+    Parameters
+    ----------
     points (list): List of Point
 
     Return
@@ -101,35 +103,6 @@ def bf_closest(points, low, high):
                     min_points = (points[i], points[j])
 
     return {"distance": min_dist, "pair": min_points}
-
-
-def bf_pairs(points):
-    """
-    Creates a permutation list of all pairs of points with distance
-    Return [(Point, Point, float)]
-    """
-    return _bf_pairs(points, 0, len(points) - 1)
-
-
-def _bf_pairs(points, low, high):
-    """
-    Creates a permutation list of all pairs of points with distance
-    Return [(Point, Point, float)]
-    """
-    # raise exception if points is less than 2 elements (high is inclusive)
-    if high - low <= 0:
-        raise IndexError()
-
-    pairs = []
-
-    # iterate if points has more than 2 elements
-    if high - low > 1:
-        for i in range(low, high):  # skip last element compare b/c redundant
-            for j in range(i + 1, high + 1):
-                dist = Point.distance(points[i], points[j])
-                pairs.append((points[i], points[j], dist))
-
-    return pairs
 
 
 def closest_pair(points):
@@ -250,10 +223,10 @@ def strip_closest(strip, min_pair):
 
                   y-coord
                     |
-            . . . . | . . . .      
+            . . . . | . . . .
             .       |       .
             .       |       .   <--- strip
-            .___ ___|___ ___.   
+            .___ ___|___ ___.
      d high |_4_|_5_|_6_|_7_|
      ___ ___|_X_|_1_|_2_|_3_|___ ___ x-coord
             .       |       .
@@ -275,3 +248,152 @@ def strip_closest(strip, min_pair):
                 strip_min_points = (strip[i], strip[j])
 
     return {"distance": strip_min_dist, "pair": strip_min_points}
+
+
+# -------------------------------------------
+# METHODS BELOW FOR VISUALIZATION RUN PROGRAM
+# -------------------------------------------
+
+def bf_pairs(points):
+    """
+    Creates a permutation list of all pairs of points with distance.
+    Used for visual run program.
+    Return [(Point, Point, float)]
+    """
+    return _bf_pairs(points, 0, len(points) - 1)
+
+
+def _bf_pairs(points, low, high):
+    """
+    Creates a permutation list of all pairs of points with distance.
+    Used for visual run program.
+    Return [(Point, Point, float)]
+    """
+    # raise exception if points is less than 2 elements (high is inclusive)
+    if high - low <= 0:
+        raise IndexError()
+
+    pairs = []
+
+    # iterate if points has more than 2 elements
+    if high - low > 1:
+        for i in range(low, high):  # skip last element compare b/c redundant
+            for j in range(i + 1, high + 1):
+                dist = Point.distance(points[i], points[j])
+                pairs.append((points[i], points[j], dist))
+
+    return pairs
+
+
+def closest_pair_plt(points, pause_t):
+    """
+    Matplotlib version to show how middle points are selected.
+    Used for visual run program.
+
+    Parameters
+    pause_t (float): Number of seconds to pause at each recursion
+    """
+    import matplotlib.pyplot as plt
+
+    points_xsorted = sorted(points, key=lambda point: point.x)
+    points_ysorted = sorted(points, key=lambda point: point.y)
+
+    # breakdown Points into x and y arrays
+    plt_x, plt_y = [], []
+    for point in points:
+        plt_x.append(point.x)
+        plt_y.append(point.y)
+
+    plt.title("Divide and Conquer")
+
+    # do closest pair of points with matplotlib
+    result = closest_plt(points_xsorted, 0, len(points_xsorted) - 1,
+                         points_ysorted, plt_x, plt_y, pause_t)
+
+    # show plot after recursion
+    plt.show()
+
+    return result
+
+
+def closest_plt(points_xsorted, low, high, points_ysorted,
+                plt_x, plt_y, pause_t):
+    """
+    Matplotlib version to show minimal pair at each recursion level.
+    Used for visual run program.
+
+    Parameters
+    ----------
+    plt_x (array): 1D array of x values
+    plt_y (array): 1D array of y values
+    pause_t (float): Number of seconds to pause at each recursion
+    """
+    import matplotlib.pyplot as plt
+
+    # base case: use brute force on size 3 or less
+    if high - low + 1 <= 3:
+        return bf_closest(points_xsorted, low, high)
+
+    # initializations
+    mid = (low + high) // 2
+    mid_point = points_xsorted[mid]
+    points_yleft, points_yright = [], []
+
+    # split points_ysorted by middle of points_xsorted's midpoint
+    for point in points_ysorted:
+        if point.x <= mid_point.x:
+            points_yleft.append(point)
+        else:
+            points_yright.append(point)
+
+    # recurse to find local minimal pairs on left and right
+    min_pair_left = closest_plt(
+        points_xsorted, low, mid, points_yleft, plt_x, plt_y, pause_t)
+
+    # plot minimal pair on the left
+    min_points = min_pair_left['pair']
+    x = [min_points[0].x, min_points[1].x]
+    y = [min_points[0].y, min_points[1].y]
+    plt.pause(pause_t)
+    plt.scatter(plt_x, plt_y, c="black")
+    plt.scatter(x, y, c="aqua")
+    plt.title(f"Min left: {min_pair_left['distance']:.2f}")
+
+    min_pair_right = closest_plt(
+        points_xsorted, mid + 1, high, points_yright, plt_x, plt_y, pause_t)
+
+    # plot minimal pair on the right
+    min_points = min_pair_right['pair']
+    x = [min_points[0].x, min_points[1].x]
+    y = [min_points[0].y, min_points[1].y]
+    plt.pause(pause_t)
+    plt.scatter(plt_x, plt_y, c="black")
+    plt.scatter(x, y, c="lime")
+    plt.title(f"Min right: {min_pair_right['distance']:.2f}")
+
+    # get the smaller of the two local minimal pairs
+    min_pair = min_of_pairs(min_pair_left, min_pair_right)
+
+    # build strip array to find points smaller than delta from x-coord to mid
+    delta = min_pair["distance"]
+    strip = []
+    for point in points_ysorted:
+        if abs(point.x - mid_point.x) < delta:
+            strip.append(point)
+
+    # try to find a pair that's smaller than min_pair in the strip
+    strip_min_pair = strip_closest(strip, min_pair)
+
+    min_pair = min_of_pairs(min_pair, strip_min_pair)
+
+    # plot minimal pair
+    min_points = min_pair['pair']
+    x = [min_points[0].x, min_points[1].x]
+    y = [min_points[0].y, min_points[1].y]
+    plt.pause(pause_t)
+    plt.scatter(plt_x, plt_y, c="black")
+    plt.scatter(x, y, c="tomato")
+    plt.title(f"Combined min: {min_pair['distance']:.2f}")
+
+    # return the smaller of min_pair and strip_min_pair
+    return min_pair
