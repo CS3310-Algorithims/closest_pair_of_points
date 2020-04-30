@@ -304,6 +304,7 @@ def closest_pair_plt(points, pause_t):
         plt_x.append(point.x)
         plt_y.append(point.y)
 
+    plt.ion()
     plt.title("Divide and Conquer")
 
     # do closest pair of points with matplotlib
@@ -311,7 +312,7 @@ def closest_pair_plt(points, pause_t):
                          points_ysorted, plt_x, plt_y, pause_t)
 
     # show plot after recursion
-    plt.show()
+    plt.show(block=True)
 
     return result
 
