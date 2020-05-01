@@ -294,31 +294,45 @@ def closest_pair_plt(points, pause_t):
     pause_t (float): Number of seconds to pause at each recursion
     """
     from matplotlib import pyplot as plt
+    from matplotlib.patches import Rectangle, Patch
 
     # presort points by x-coord and y-coord
     points_xsorted = sorted(points, key=lambda point: point.x)
     points_ysorted = sorted(points, key=lambda point: point.y)
 
-    # matplotlib figure
+    # matplotlib
     plt.ion()
     fig = plt.figure()
-    ax = fig.add_subplot(111)
+    ax = fig.add_axes([0.1, 0.1, 0.75, 0.75])  # add space for legend
     ax.set_title("Divide and Conquer")
 
-    # breakdown Points into x and y arrays for plt
+    # prepare x, y arrays for plot
     plt_x, plt_y = [], []
     for point in points:
         plt_x.append(point.x)
         plt_y.append(point.y)
 
-    # boundary height for plt
+    # add scatter to plot
+    ax.plot(plt_x, plt_y, 'go', c="black")
+    ax.plot([], [], 'go', c="black")  # preadd empty second plot
+
+    # preadd invis rectangle to plot
     rect_y = points_ysorted[0].y
     rect_h = points_ysorted[-1].y - points_ysorted[0].y
+    rect = Rectangle(xy=(0, rect_y), width=0, height=rect_h,
+                     linewidth=0, color='aqua', fill=False)
+    ax.add_patch(rect)
+
+    # add legends
+    left_patch = Patch(color="aqua", label="Left")
+    right_patch = Patch(color="lime", label="Right")
+    strip_patch = Patch(color="tomato", label="Strip")
+    ax.legend(handles=[left_patch, right_patch, strip_patch],
+              bbox_to_anchor=(1, 1), loc="upper left", frameon=False)
 
     # do closest pair of points with matplotlib
     result = closest_plt(points_xsorted, 0, len(points_xsorted) - 1,
-                         points_ysorted,
-                         ax, plt_x, plt_y, pause_t, rect_y, rect_h)
+                         points_ysorted, ax, pause_t)
 
     # show plot after recursion
     plt.show(block=True)
@@ -327,7 +341,7 @@ def closest_pair_plt(points, pause_t):
 
 
 def closest_plt(points_xsorted, low, high, points_ysorted,
-                ax, plt_x, plt_y, pause_t, rect_y, rect_h):
+                ax, pause_t):
     """
     Matplotlib version to show minimal pair at each recursion level.
     Used for visual run program.
@@ -341,7 +355,6 @@ def closest_plt(points_xsorted, low, high, points_ysorted,
     rect_h (float): Rectangle height for boundary
     """
     from matplotlib import pyplot as plt
-    from matplotlib.patches import Rectangle
 
     # base case: use brute force on size 3 or less
     if high - low + 1 <= 3:
@@ -361,7 +374,11 @@ def closest_plt(points_xsorted, low, high, points_ysorted,
 
     # recurse to find local minimal pairs on left
     min_pair_left = closest_plt(points_xsorted, low, mid, points_yleft,
-                                ax, plt_x, plt_y, pause_t, rect_y, rect_h)
+                                ax, pause_t)
+
+    # get last plot line and rectangle
+    line = ax.get_lines()[-1]
+    rect = ax.patches[-1]
 
     # plot minimal pair on the left
     min_points = min_pair_left['pair']
@@ -369,19 +386,18 @@ def closest_plt(points_xsorted, low, high, points_ysorted,
     y = [min_points[0].y, min_points[1].y]
     plt.pause(pause_t)
     ax.set_title(f"Min left: {min_pair_left['distance']:.2f}")
-    ax.scatter(plt_x, plt_y, c="black")
-    ax.scatter(x, y, c="aqua")
+    line.set_data(x, y)
+    line.set_color("aqua")
 
     # draw rectangle boundary
-    [p.remove() for p in reversed(ax.patches)]
-    rect_w = abs(mid_point.x - points_xsorted[low].x)
-    rect = Rectangle(xy=(points_xsorted[low].x, rect_y), width=rect_w,
-                     height=rect_h, linewidth=1, color='aqua', fill=False)
-    ax.add_patch(rect)
+    rect.set_xy((points_xsorted[low].x, rect.get_y()))
+    rect.set_linewidth(1)
+    rect.set_width(abs(mid_point.x - points_xsorted[low].x))
+    rect.set_color("aqua")
 
     # recurse to find local minimal pairs on right
     min_pair_right = closest_plt(points_xsorted, mid + 1, high, points_yright,
-                                 ax, plt_x, plt_y, pause_t, rect_y, rect_h)
+                                 ax, pause_t)
 
     # plot minimal pair on the right
     min_points = min_pair_right['pair']
@@ -389,15 +405,13 @@ def closest_plt(points_xsorted, low, high, points_ysorted,
     y = [min_points[0].y, min_points[1].y]
     plt.pause(pause_t)
     ax.set_title(f"Min right: {min_pair_right['distance']:.2f}")
-    ax.scatter(plt_x, plt_y, c="black")
-    ax.scatter(x, y, c="lime")
+    line.set_data(x, y)
+    line.set_color("lime")
 
     # draw rectangle boundary
-    [p.remove() for p in reversed(ax.patches)]
-    rect_w = abs(mid_point.x - points_xsorted[high].x)
-    rect = Rectangle(xy=(mid_point.x, rect_y), width=rect_w,
-                     height=rect_h, linewidth=1, color='lime', fill=False)
-    ax.add_patch(rect)
+    rect.set_xy((mid_point.x, rect.get_y()))
+    rect.set_width(abs(mid_point.x - points_xsorted[high].x))
+    rect.set_color("lime")
 
     # get the smaller of the two local minimal pairs
     min_pair = min_of_pairs(min_pair_left, min_pair_right)
@@ -420,17 +434,15 @@ def closest_plt(points_xsorted, low, high, points_ysorted,
     y = [min_points[0].y, min_points[1].y]
     plt.pause(pause_t)
     ax.set_title(f"Combined min: {min_pair['distance']:.2f}")
-    ax.scatter(plt_x, plt_y, c="black")
-    ax.scatter(x, y, c="tomato")
+    line.set_data(x, y)
+    line.set_color("tomato")
 
     # draw rectangle boundary
-    [p.remove() for p in reversed(ax.patches)]
     min_x = min(strip, key=lambda p: p.x)
     max_x = max(strip, key=lambda p: p.x)
-    rect_w = abs(min_x.x - max_x.x)
-    rect = Rectangle(xy=(min_x.x, rect_y), width=rect_w,
-                     height=rect_h, linewidth=1, color='tomato', fill=False)
-    ax.add_patch(rect)
+    rect.set_xy((min_x.x, rect.get_y()))
+    rect.set_width(abs(min_x.x - max_x.x))
+    rect.set_color("tomato")
 
     # return the smaller of min_pair and strip_min_pair
     return min_pair
