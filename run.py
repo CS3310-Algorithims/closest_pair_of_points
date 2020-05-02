@@ -4,7 +4,7 @@ Group Project: Closest Pair of Points
 import os.path
 
 from closest_pair_points import Point, bf_closest_pair, bf_pairs,\
-    closest_pair, closest_pair_plt
+    closest_pair, closest_pair_plt, closest_pair_opt
 
 
 class Run(object):
@@ -15,11 +15,12 @@ class Run(object):
         "1: List points\n"\
         "2: Bruteforce\n"\
         "3. Recursion\n"\
-        "4. Recursion with Matplotlib\n"\
-        "5: Add points manually\n"\
-        "6: Add points from file\n"\
-        "7. Remove points\n"\
-        "8. Remove all points\n"\
+        "4. Recursion optimized\n"\
+        "5. Recursion with Matplotlib\n"\
+        "6: Add points manually\n"\
+        "7: Add points from file\n"\
+        "8. Remove points\n"\
+        "9. Remove all points\n"\
         "X: Exit"
 
     def __init__(self):
@@ -64,17 +65,19 @@ class Run(object):
             elif choice == "3":
                 self.recursion()
             elif choice == "4":
-                self.recursion_plt()
+                self.recursion_opt()
             elif choice == "5":
-                self.add_manual()
+                self.recursion_plt()
             elif choice == "6":
+                self.add_manual()
+            elif choice == "7":
                 clear = self.input("Clear previous points? (Y/N)")
                 if clear == "Y" or clear == "y":
                     self.clear_points()
                 self.add_from_file()
-            elif choice == "7":
-                self.remove_points()
             elif choice == "8":
+                self.remove_points()
+            elif choice == "9":
                 self.clear_points()
             else:
                 self.print_points(self.points, "POINTS")
@@ -124,6 +127,18 @@ class Run(object):
             print(subtitle)
 
             result = closest_pair_plt(self.points, pause_t)
+            point1, point2 = result['pair']
+            dist = result['distance']
+            self.print_pairs([(point1, point2, dist)])
+        else:
+            print("Must have two or more points.")
+
+    def recursion_opt(self):
+        """Print the closest pair via divide and conquer"""
+        print("RECURSION OPTIMIZED\n")
+
+        if self.points:
+            result = closest_pair_opt(self.points)
             point1, point2 = result['pair']
             dist = result['distance']
             self.print_pairs([(point1, point2, dist)])

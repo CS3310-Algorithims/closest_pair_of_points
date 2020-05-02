@@ -52,6 +52,11 @@ class Point(object):
         return [Point(uniques[i], uniques[mid + i]) for i in range(size)]
 
 
+def min_of_pairs(pair_a, pair_b):
+    """Return closest pair of Points of two pair of Points"""
+    return pair_a if pair_a["distance"] <= pair_b["distance"] else pair_b
+
+
 def bf_closest_pair(points):
     """
     Wrapper for bruteforce approach to get minimal distance of two points.
@@ -180,21 +185,16 @@ def closest(points_xsorted, low, high, points_ysorted):
     return min_of_pairs(min_pair, strip_min_pair)
 
 
-def min_of_pairs(pair_a, pair_b):
-    """Return closest pair of Points of two pair of Points"""
-    return pair_a if pair_a["distance"] <= pair_b["distance"] else pair_b
-
-
 def strip_closest(strip, min_pair):
     """
-    Find closest pair in strip.
+    Find closest pair in strip. Sparsity geneeralization by Jon Louis Bentley
+    and Michael Ian Shamos.
 
-    Recurrence relation: T(n) = 7n
-    Time Complexity: O(n)
+    Time Complexity: O(7n)
 
     Parameters
     ----------
-    strip (list): A strip of list of Point of distance from minimal pair
+    strip (list): A strip of list of Points around median within delta
     min_pair (dict): Minimal distance of two Points
 
     Correctness Proof
@@ -246,6 +246,197 @@ def strip_closest(strip, min_pair):
             if dist < strip_min_dist:
                 strip_min_dist = dist
                 strip_min_points = (strip[i], strip[j])
+
+    return {"distance": strip_min_dist, "pair": strip_min_points}
+
+
+def closest_pair_opt(points):
+    """
+    Find closest pair in points using divide and conquer using optimized strip
+    calculation.
+    Optimized version does not consider duplicate points.
+
+    Timsort: O(nlogn)
+    Closest: O(nlogn)
+    Time Complexity: O(nlogn)
+
+    Return
+    ------
+    {"distance": float, "pair": Point}
+    """
+    # sort points by x and y via python's Timsort: O(nlogn)
+    points_xsorted = sorted(points, key=lambda point: point.x)
+    points_ysorted = sorted(points, key=lambda point: point.y)
+
+    return closest_opt(points_xsorted, 0, len(points_xsorted) - 1, points_ysorted)
+
+
+def closest_opt(points_xsorted, low, high, points_ysorted):
+    """
+    Recursively find the closest pair of points in points_xsorted and with
+    points_ysorted for the strip in the middle.
+    Uses optimized strip calculation.
+
+    Recurrence relation: T(n) = 2T(n/2) + n
+    Time Complexity: O(nlogn)
+
+    Parameters
+    ----------
+    points_xsorted (list): List of Point sorted by x-coordinate
+    low (int): Start index for points_xsorted (inclusive)
+    high (int): End index for points_xsorted (inclusive)
+    points_ysorted (list): List of Point sorted by y-coordinate
+
+    Return
+    ------
+    {"distance": float, "pair": Point}
+    """
+    # base case: use brute force on size 3 or less
+    if high - low + 1 <= 3:
+        return bf_closest(points_xsorted, low, high)
+
+    # initializations
+    mid = (low + high) // 2
+    mid_point = points_xsorted[mid]
+    points_yleft, points_yright = [], []
+
+    # split points_ysorted by middle of points_xsorted's midpoint
+    for point in points_ysorted:
+        if point.x <= mid_point.x:
+            points_yleft.append(point)
+        else:
+            points_yright.append(point)
+
+    # recurse to find local minimal pairs on left and right
+    min_pair_left = closest_opt(points_xsorted, low, mid, points_yleft)
+    min_pair_right = closest_opt(points_xsorted, mid + 1, high, points_yright)
+
+    # get the smaller of the two local minimal pairs
+    min_pair = min_of_pairs(min_pair_left, min_pair_right)
+
+    # build strip array to find points smaller than delta from x-coord to mid
+    delta = min_pair["distance"]
+    strip_left, strip_right = [], []
+    for point in points_ysorted:
+        if abs(point.x - mid_point.x) < delta:
+            if point.x <= mid_point.x:
+                strip_left.append(point)
+            else:
+                strip_right.append(point)
+
+    # try to find a pair that's smaller than min_pair in the strip
+    strip_min_pair = strip_closest_opt(strip_left, strip_right, min_pair)
+
+    # return the smaller of min_pair and strip_min_pair
+    return min_of_pairs(min_pair, strip_min_pair)
+
+
+def strip_closest_opt(strip_left, strip_right, min_pair):
+    """
+    Find closest pair in strip using hopscotch approach by Jose C. Pereira
+    and Fernando G. Lobo.
+
+    Time Complexity: O(2n)
+
+    Parameters
+    ----------
+    strip_left (list): A strip of Points left side of median within delta.
+    strip_right (list): A strip of Points right side of median within delta.
+    min_pair (dict): Minimal distance of two Points
+
+    Correctness Proof
+    -----------------
+    Because each side of median do not need to compare itself, then points
+    on each side need only compare points on the opposite side.
+
+    Let d = delta and in a d x 2d box where left is d x d and right is d x d.
+    Suppose the left side has a point X of interest and the right side has a
+    maximum of 4 points of interest. Then, point X need only to compare the
+    closest 2/4 points. The other farther 2 points are larger than delta.
+    Thus only 2 comparisons are needed per point on either side.
+
+    Illustration
+    ------------
+    Let left = {X}, right = {1, 2, 3, 4}.
+    Point X to point 1 and point 2 are within delta distance.
+    Point X to point 3 and point 4 are larger than delta distance.
+    Therefore, X need only compare to point 1 and point 2.
+
+                  y-coord
+                    |
+            . . . . | . . . .
+            .       |       .
+            .       |       .   <--- strip
+            .___ ___|___ ___.
+     d high |___|___|_2_|_3_|
+     ___ ___|___|_X_|_1_|_4_|___ ___ x-coord
+            .       |       .
+            .<-- 2d wide -->.
+
+    NOTE
+    ----
+    When either strip_left or strip_right is empty, then all points are on the
+    same axis, such as all vertical points when x=C where C is some constant.
+    Because the strip is already presorted by y-coord, then there only need
+    an outer for loop of n and a inner for looper of 2 comparisons.
+    Therefore, time complexity is still O(2n).
+
+    Return
+    ------
+    {"distance": float, "pair": Point}
+    """
+    strip_min_dist = min_pair["distance"]
+    strip_min_points = min_pair["pair"]
+
+    # if both arrays are not empty
+    if strip_left and strip_right:
+        # init left and right indices
+        l, r = 0, 0
+        l_size, r_size = len(strip_left), len(strip_right)
+
+        # while there are still points in strip_left or strip_right
+        while l < l_size and r < r_size:
+            left, right = strip_left[l], strip_right[r]
+
+            dist = Point.distance(left, right)
+            if dist < strip_min_dist:
+                strip_min_dist = dist
+                strip_min_points = (left, right)
+
+            # if first left is lower
+            if left.y < right.y:
+                # when there's still point on the otherside
+                if r + 1 < r_size:
+                    right = strip_right[r + 1]
+
+                    dist = Point.distance(left, right)
+                    if dist < strip_min_dist:
+                        strip_min_dist = dist
+                        strip_min_points = (left, right)
+                l += 1
+            # else first right is lower
+            else:
+                # when there's still point on the other side
+                if l + 1 < l_size:
+                    left = strip_left[l + 1]
+
+                    dist = Point.distance(left, right)
+                    if dist < strip_min_dist:
+                        strip_min_dist = dist
+                        strip_min_points = (left, right)
+
+                r += 1
+    # else one of the array is empty, such as all vertical points
+    else:
+        strip = strip_left if strip_left else strip_right
+
+        for i in range(len(strip) - 1):  # skip last element compare
+            for j in range(i + 1, min(i + 2, len(strip))):
+                dist = Point.distance(strip[i], strip[j])
+
+                if dist < strip_min_dist:
+                    strip_min_dist = dist
+                    strip_min_points = (strip[i], strip[j])
 
     return {"distance": strip_min_dist, "pair": strip_min_points}
 
