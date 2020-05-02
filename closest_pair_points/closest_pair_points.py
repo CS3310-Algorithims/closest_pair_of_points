@@ -377,9 +377,9 @@ def strip_closest_opt(strip_left, strip_right, min_pair):
     ----
     When either strip_left or strip_right is empty, then all points are on the
     same axis, such as all vertical points when x=C where C is some constant.
-    Because the strip is already presorted by y-coord, then there only need
-    an outer for loop of n and a inner for looper of 2 comparisons.
-    Therefore, time complexity is still O(2n).
+    Because the strip is already presorted by y-coord, then there only need one
+    for loop of n comparisons.
+    Therefore, time complexity is O(n).
 
     Return
     ------
@@ -431,12 +431,11 @@ def strip_closest_opt(strip_left, strip_right, min_pair):
         strip = strip_left if strip_left else strip_right
 
         for i in range(len(strip) - 1):  # skip last element compare
-            for j in range(i + 1, min(i + 2, len(strip))):
-                dist = Point.distance(strip[i], strip[j])
+            dist = Point.distance(strip[i], strip[i+1])
 
-                if dist < strip_min_dist:
-                    strip_min_dist = dist
-                    strip_min_points = (strip[i], strip[j])
+            if dist < strip_min_dist:
+                strip_min_dist = dist
+                strip_min_points = (strip[i], strip[i+1])
 
     return {"distance": strip_min_dist, "pair": strip_min_points}
 
