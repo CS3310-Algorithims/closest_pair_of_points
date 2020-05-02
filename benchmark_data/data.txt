@@ -18,12 +18,14 @@ n input timings (seconds)
 4096    18.831187609154078
 8192    75.12259165753461
 
+
 CLOSEST PAIR OF POINTS
 
 Which task to benchmark?
 1: Bruteforce
 2: Recursion
-3: Bruteforce vs. Recursion
+3: Recursion vertical points
+4: Bruteforce vs. Recursion
 X: Exit
 
 
@@ -47,12 +49,45 @@ n input timings (seconds)
 4096    0.1760778905658924
 8192    0.3970153176104816
 
+
 CLOSEST PAIR OF POINTS
 
 Which task to benchmark?
 1: Bruteforce
 2: Recursion
-3: Bruteforce vs. Recursion
+3: Recursion vertical points
+4: Bruteforce vs. Recursion
+X: Exit
+
+
+Generating random and unique list of points...
+
+RECURSIVE VERTICAL POINTS
+
+n input timings (seconds)
+------- -----------------
+2       3.0107217414422787e-05
+4       8.190183720364165e-05
+8       0.00024596065752121666
+16      0.0008748953263903029
+32      0.0018023507103006996
+64      0.004585227153852473
+128     0.011211876735948987
+256     0.026475215381420173
+512     0.06154144870827281
+1024    0.12099478328671817
+2048    0.2986163947576701
+4096    0.662687411049757
+8192    1.4406640325402889
+
+
+CLOSEST PAIR OF POINTS
+
+Which task to benchmark?
+1: Bruteforce
+2: Recursion
+3: Recursion vertical points
+4: Bruteforce vs. Recursion
 X: Exit
 
 

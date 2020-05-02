@@ -31,8 +31,8 @@ class Benchmark(object):
         False if invalid choice, else True.
         """
         # array of benchmark methods
-        benchmarks = [self.bruteforce,
-                      self.recursive, self.closest_pair_points]
+        benchmarks = [self.bruteforce, self.recursive, self.recursive_vertical,
+                      self.bf_vs_recursion]
 
         # try to convert choice to int
         try:
@@ -164,7 +164,67 @@ class Benchmark(object):
         plt.title('Growth Rates: Recursive')
         plt.legend()  # show legend
 
-    def closest_pair_points(self, fig=3):
+    def recursive_vertical(self, fig=3):
+        """
+        Benchmarks recursive version of closest pair of points with
+        vertical points only, ie all points have same x-coord.
+
+        Parameters
+        ----------
+        fig (int): Figure number for plot
+        """
+        sample_size = 13
+
+        # x and y cooardinates for graphs
+        n = [2**(i + 1) for i in range(sample_size)]
+        timings_recursive = []
+        lists_re = []
+
+        # generate lists of lists
+        print("\nGenerating random and unique list of points...")
+        for i in range(sample_size):
+            # generate list of unique Points
+            unique_points = Point.get_unique_points(n[i])
+
+            for point in unique_points:
+                point.x = 0
+
+            # add to benchmarking lists
+            lists_re.append(unique_points)
+
+        # headings variables
+        heading1 = "n input"
+        heading2 = "timings (seconds)"
+        pad_size = len(heading1) if len(
+            str(n[-1])) < len(heading1) else len(str(n[-1]))
+        sep = "-"
+
+        # benchmark recursive via lists_copy
+        print("\nRECURSIVE VERTICAL POINTS\n\n"
+              f"{heading1:<{pad_size}} {heading2}\n"
+              f"{sep * pad_size:<{pad_size}} {sep * len(heading2)}")
+
+        for i in range(len(lists_re)):
+            # benchmarking
+            start_time = time.perf_counter()
+            answer = closest_pair(lists_re[i])
+            end_time = time.perf_counter()
+
+            # add time diff to timings
+            duration = end_time - start_time
+            timings_recursive.append(duration)
+
+            print(f"{n[i]:<{pad_size}} {duration}")
+
+        # graph results
+        plt.figure(fig)
+        plt.plot(n, timings_recursive, label="Recursive Vertical Points")
+        plt.xlabel('input size (n)')
+        plt.ylabel('timings (seconds)')
+        plt.title('Growth Rates: Recursive Vertical Points')
+        plt.legend()  # show legend
+
+    def bf_vs_recursion(self, fig=4):
         """
         Benchmarks bruteforce vs recursive of closest pair of points
 
@@ -269,7 +329,8 @@ if __name__ == "__main__":
         "\nWhich task to benchmark?\n"\
         "1: Bruteforce\n"\
         "2: Recursion\n"\
-        "3: Bruteforce vs. Recursion\n"\
+        "3: Recursion vertical points\n"\
+        "4: Bruteforce vs. Recursion\n"\
         "X: Exit\n"
 
     while True:
