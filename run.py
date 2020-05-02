@@ -4,7 +4,7 @@ Group Project: Closest Pair of Points
 import os.path
 
 from closest_pair_points import Point, bf_closest_pair, bf_pairs,\
-    closest_pair, closest_pair_plt, closest_pair_opt
+    closest_pair, closest_pair_opt, closest_pair_opt_plt
 
 
 class Run(object):
@@ -126,7 +126,7 @@ class Run(object):
             self.clear_screen()
             print(subtitle)
 
-            result = closest_pair_plt(self.points, pause_t)
+            result = closest_pair_opt_plt(self.points, pause_t)
             point1, point2 = result['pair']
             dist = result['distance']
             self.print_pairs([(point1, point2, dist)])

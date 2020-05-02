@@ -117,7 +117,7 @@ class TestClosestPairPoints(unittest.TestCase):
 
     def test_bruteforce_matches_recursion_n1000(self):
         n = 1000
-        repeat = 100
+        repeat = 10
 
         # gen list of lists
         for i in range(repeat):
@@ -135,7 +135,7 @@ class TestClosestPairPoints(unittest.TestCase):
 
     def test_bruteforce_matches_recursion_vertical_n1000(self):
         n = 1000
-        repeat = 100
+        repeat = 10
 
         # gen list of lists
         for i in range(repeat):
