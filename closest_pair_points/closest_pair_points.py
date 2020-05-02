@@ -304,7 +304,15 @@ def closest_pair_plt(points, pause_t):
     plt.ion()
     fig = plt.figure()
     ax = fig.add_axes([0.1, 0.1, 0.73, 0.75])  # add space for legend
+
+    # add title and legend
     ax.set_title("Divide and Conquer")
+    left_patch = Patch(color="aqua", label="Left")
+    right_patch = Patch(color="lime", label="Right")
+    strip_patch = Patch(color="tomato", label="Strip")
+    mid_patch = Patch(color="violet", label="Middle")
+    ax.legend(handles=[left_patch, right_patch, strip_patch, mid_patch],
+              bbox_to_anchor=(1, 1), loc="upper left", frameon=False)
 
     # prepare x, y arrays for plot
     plt_x, plt_y = [], []
@@ -322,19 +330,10 @@ def closest_pair_plt(points, pause_t):
     ax.axvline(x=0, linewidth=0, c="violet")
 
     # preadd invis rectangle to plot
-    rect_y = points_ysorted[0].y
     rect_h = points_ysorted[-1].y - points_ysorted[0].y
-    rect = Rectangle(xy=(0, rect_y), width=0, height=rect_h,
+    rect = Rectangle(xy=(0, points_ysorted[0].y), width=0, height=rect_h,
                      linewidth=0, color='aqua', fill=False)
     ax.add_patch(rect)
-
-    # add legends
-    left_patch = Patch(color="aqua", label="Left")
-    right_patch = Patch(color="lime", label="Right")
-    strip_patch = Patch(color="tomato", label="Strip")
-    mid_patch = Patch(color="violet", label="Middle")
-    ax.legend(handles=[left_patch, right_patch, strip_patch, mid_patch],
-              bbox_to_anchor=(1, 1), loc="upper left", frameon=False)
 
     # do closest pair of points with matplotlib
     result = closest_plt(points_xsorted, 0, len(points_xsorted) - 1,
@@ -456,7 +455,6 @@ def closest_plt(points_xsorted, low, high, points_ysorted,
     line.set_color("tomato")
 
     # draw rectangle boundary
-    min_x = min(strip, key=lambda p: p.x)
     rect.set_xy((mid_point.x - delta, rect.get_y()))
     rect.set_width(2*delta)
     rect.set_color("tomato")
