@@ -303,7 +303,7 @@ def closest_pair_plt(points, pause_t):
     # matplotlib
     plt.ion()
     fig = plt.figure()
-    ax = fig.add_axes([0.1, 0.1, 0.75, 0.75])  # add space for legend
+    ax = fig.add_axes([0.1, 0.1, 0.73, 0.75])  # add space for legend
     ax.set_title("Divide and Conquer")
 
     # prepare x, y arrays for plot
@@ -312,9 +312,14 @@ def closest_pair_plt(points, pause_t):
         plt_x.append(point.x)
         plt_y.append(point.y)
 
-    # add scatter to plot
-    ax.plot(plt_x, plt_y, 'go', c="black")
-    ax.plot([], [], 'go', c="black")  # preadd empty second plot
+    # add plot line with scatter style
+    ax.plot(plt_x, plt_y, linestyle="None", marker="o", c="black")
+
+    # preadd empty plot line (scatter style) for marking min_pair
+    ax.plot([], [], linestyle="None", marker="o", c="black")
+
+    # preadd invis vertical line
+    ax.axvline(x=0, linewidth=0, c="violet")
 
     # preadd invis rectangle to plot
     rect_y = points_ysorted[0].y
@@ -327,7 +332,8 @@ def closest_pair_plt(points, pause_t):
     left_patch = Patch(color="aqua", label="Left")
     right_patch = Patch(color="lime", label="Right")
     strip_patch = Patch(color="tomato", label="Strip")
-    ax.legend(handles=[left_patch, right_patch, strip_patch],
+    mid_patch = Patch(color="violet", label="Middle")
+    ax.legend(handles=[left_patch, right_patch, strip_patch, mid_patch],
               bbox_to_anchor=(1, 1), loc="upper left", frameon=False)
 
     # do closest pair of points with matplotlib
@@ -377,7 +383,8 @@ def closest_plt(points_xsorted, low, high, points_ysorted,
                                 ax, pause_t)
 
     # get last plot line and rectangle
-    line = ax.get_lines()[-1]
+    line = ax.get_lines()[-2]
+    vline = ax.get_lines()[-1]
     rect = ax.patches[-1]
 
     # plot minimal pair on the left
@@ -385,7 +392,8 @@ def closest_plt(points_xsorted, low, high, points_ysorted,
     x = [min_points[0].x, min_points[1].x]
     y = [min_points[0].y, min_points[1].y]
     plt.pause(pause_t)
-    ax.set_title(f"Min left: {min_pair_left['distance']:.2f}")
+    ax.set_title(f"Midpoint: ({mid_point.x}, {mid_point.y})\n"
+                 f"Min left: {min_pair_left['distance']:.2f}\n")
     line.set_data(x, y)
     line.set_color("aqua")
 
@@ -394,6 +402,10 @@ def closest_plt(points_xsorted, low, high, points_ysorted,
     rect.set_linewidth(1)
     rect.set_width(abs(mid_point.x - points_xsorted[low].x))
     rect.set_color("aqua")
+
+    # change vertical line position and make visible
+    vline.set_xdata([mid_point.x])
+    vline.set_linewidth(1)
 
     # recurse to find local minimal pairs on right
     min_pair_right = closest_plt(points_xsorted, mid + 1, high, points_yright,
@@ -404,7 +416,8 @@ def closest_plt(points_xsorted, low, high, points_ysorted,
     x = [min_points[0].x, min_points[1].x]
     y = [min_points[0].y, min_points[1].y]
     plt.pause(pause_t)
-    ax.set_title(f"Min right: {min_pair_right['distance']:.2f}")
+    ax.set_title(f"Midpoint: ({mid_point.x}, {mid_point.y})\n"
+                 f"Min right: {min_pair_right['distance']:.2f}\n")
     line.set_data(x, y)
     line.set_color("lime")
 
@@ -412,6 +425,9 @@ def closest_plt(points_xsorted, low, high, points_ysorted,
     rect.set_xy((mid_point.x, rect.get_y()))
     rect.set_width(abs(mid_point.x - points_xsorted[high].x))
     rect.set_color("lime")
+
+    # change vertical line position
+    vline.set_xdata([mid_point.x])
 
     # get the smaller of the two local minimal pairs
     min_pair = min_of_pairs(min_pair_left, min_pair_right)
@@ -433,15 +449,16 @@ def closest_plt(points_xsorted, low, high, points_ysorted,
     x = [min_points[0].x, min_points[1].x]
     y = [min_points[0].y, min_points[1].y]
     plt.pause(pause_t)
-    ax.set_title(f"Combined min: {min_pair['distance']:.2f}")
+    ax.set_title(f"Midpoint: ({mid_point.x}, {mid_point.y})\n"
+                 f"Combined min: {min_pair['distance']:.2f}\n"
+                 f"Delta: {delta:.2f}")
     line.set_data(x, y)
     line.set_color("tomato")
 
     # draw rectangle boundary
     min_x = min(strip, key=lambda p: p.x)
-    max_x = max(strip, key=lambda p: p.x)
-    rect.set_xy((min_x.x, rect.get_y()))
-    rect.set_width(abs(min_x.x - max_x.x))
+    rect.set_xy((mid_point.x - delta, rect.get_y()))
+    rect.set_width(2*delta)
     rect.set_color("tomato")
 
     # return the smaller of min_pair and strip_min_pair
