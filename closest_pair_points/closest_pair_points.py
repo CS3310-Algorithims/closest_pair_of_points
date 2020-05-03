@@ -30,26 +30,10 @@ class Point(object):
                          (point_a.y - point_b.y)**2)
 
     @staticmethod
-    def is_two_pairs_equal(pairs_a, pairs_b):
-        """
-        Compare if two tuple of Points are equal.
-
-        Parameters
-        ----------
-        pairs_a (tuple of Points): First tuple of Points
-        pairs_b (tuple of Points): Second tuple of Points
-        """
-        return (pairs_a[0] == pairs_b[0] and pairs_a[1] == pairs_b[1]) or \
-            (pairs_a[0] == pairs_b[1] and pairs_a[1] == pairs_b[0])
-
-    @staticmethod
     def get_unique_points(size):
         """Generate list of random and unique points"""
-        # generate unique list of size twice of size using random.sample()
-        uniques = random.sample(range(0, 3 * size), 2 * size)
-        mid = len(uniques) // 2
-
-        return [Point(uniques[i], uniques[mid + i]) for i in range(size)]
+        uniques = random.sample(range(0, 10 * size), 2 * size)
+        return [Point(uniques[i], uniques[size + i]) for i in range(size)]
 
 
 def min_of_pairs(pair_a, pair_b):
@@ -173,16 +157,10 @@ def closest(points_xsorted, low, high, points_ysorted):
 
     # build strip array to find points smaller than delta from x-coord to mid
     delta = min_pair["distance"]
-    strip = []
-    for point in points_ysorted:
-        if abs(point.x - mid_point.x) < delta:
-            strip.append(point)
+    strip = [p for p in points_ysorted if abs(p.x - mid_point.x) < delta]
 
-    # try to find a pair that's smaller than min_pair in the strip
-    strip_min_pair = strip_closest(strip, min_pair)
-
-    # return the smaller of min_pair and strip_min_pair
-    return min_of_pairs(min_pair, strip_min_pair)
+    # return min_pair or smaller if found in strip
+    return strip_closest(strip, min_pair)
 
 
 def strip_closest(strip, min_pair):
@@ -316,19 +294,11 @@ def closest_opt(points_xsorted, low, high, points_ysorted):
 
     # build strip array to find points smaller than delta from x-coord to mid
     delta = min_pair["distance"]
-    strip_left, strip_right = [], []
-    for point in points_ysorted:
-        if abs(point.x - mid_point.x) < delta:
-            if point.x <= mid_point.x:
-                strip_left.append(point)
-            else:
-                strip_right.append(point)
+    strip_left = [p for p in points_yleft if abs(p.x - mid_point.x) < delta]
+    strip_right = [p for p in points_yright if abs(p.x - mid_point.x) < delta]
 
-    # try to find a pair that's smaller than min_pair in the strip
-    strip_min_pair = strip_closest_opt(strip_left, strip_right, min_pair)
-
-    # return the smaller of min_pair and strip_min_pair
-    return min_of_pairs(min_pair, strip_min_pair)
+    # return min_pair or smaller if found in strip
+    return strip_closest_opt(strip_left, strip_right, min_pair)
 
 
 def strip_closest_opt(strip_left, strip_right, min_pair):
@@ -353,7 +323,8 @@ def strip_closest_opt(strip_left, strip_right, min_pair):
     Suppose the left side has a point X of interest and the right side has a
     maximum of 4 points of interest. Then, point X need only to compare the
     closest 2/4 points. The other farther 2 points are larger than delta.
-    Thus only 2 comparisons are needed per point on either side.
+    Similarly, the same reasoning can be applied when right has 3 points.
+    Therefore, only 2 comparisons are needed per point on either side.
 
     Illustration
     ------------
@@ -392,11 +363,10 @@ def strip_closest_opt(strip_left, strip_right, min_pair):
     # if strip_left and strip_right is not empty
     if strip_left and strip_right:
         # init left and right indices
-        l_size, r_size = len(strip_left), len(strip_right)
         l, r = 0, 0
 
         # while there are still points in strip_left or strip_right
-        while l < l_size and r < r_size:
+        while l < len(strip_left) and r < len(strip_right):
             left, right = strip_left[l], strip_right[r]
 
             dist = Point.distance(left, right)
@@ -404,10 +374,10 @@ def strip_closest_opt(strip_left, strip_right, min_pair):
                 strip_min_dist = dist
                 strip_min_points = (left, right)
 
-            # if first left is lower
-            if left.y < right.y:
+            # if left is lower than or same level as right
+            if left.y <= right.y:
                 # when there's still point on the otherside
-                if r + 1 < r_size:
+                if r + 1 < len(strip_right):
                     right = strip_right[r+1]
 
                     dist = Point.distance(left, right)
@@ -415,10 +385,10 @@ def strip_closest_opt(strip_left, strip_right, min_pair):
                         strip_min_dist = dist
                         strip_min_points = (left, right)
                 l += 1
-            # else first right is lower
+            # else right is lower than left
             else:
                 # when there's still point on the other side
-                if l + 1 < l_size:
+                if l + 1 < len(strip_left):
                     left = strip_left[l+1]
 
                     dist = Point.distance(left, right)
@@ -523,13 +493,13 @@ def closest_pair_opt_plt(points, pause_t):
     ax.add_patch(rect)
 
     # do closest pair of points with matplotlib
-    result = closest_opt_plt(points_xsorted, 0, len(points_xsorted) - 1,
-                             points_ysorted, ax, pause_t)
+    min_pair = closest_opt_plt(points_xsorted, 0, len(points_xsorted) - 1,
+                               points_ysorted, ax, pause_t)
 
     # show plot after recursion
     plt.show(block=True)
 
-    return result
+    return min_pair
 
 
 def closest_opt_plt(points_xsorted, low, high, points_ysorted, ax, pause_t):
@@ -619,18 +589,11 @@ def closest_opt_plt(points_xsorted, low, high, points_ysorted, ax, pause_t):
 
     # build strip array to find points smaller than delta from x-coord to mid
     delta = min_pair["distance"]
-    strip_left, strip_right = [], []
-    for point in points_ysorted:
-        if abs(point.x - mid_point.x) < delta:
-            if point.x <= mid_point.x:
-                strip_left.append(point)
-            else:
-                strip_right.append(point)
+    strip_left = [p for p in points_yleft if abs(p.x - mid_point.x) < delta]
+    strip_right = [p for p in points_yright if abs(p.x - mid_point.x) < delta]
 
     # try to find a pair that's smaller than min_pair in the strip
-    strip_min_pair = strip_closest_opt(strip_left, strip_right, min_pair)
-
-    min_pair = min_of_pairs(min_pair, strip_min_pair)
+    min_pair = strip_closest_opt(strip_left, strip_right, min_pair)
 
     # plot minimal pair
     min_points = min_pair['pair']
