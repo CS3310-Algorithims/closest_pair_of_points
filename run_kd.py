@@ -3,20 +3,17 @@ Group Project: Closest Pair of Points
 """
 import os.path
 
-from closest_pair_points import Point, bf_pairs,\
-    closest_pair, closest_pair_opt, closest_pair_opt_plt
+from closest_pair_points import bf_pairlist_kd, closest_pair_kd
 
 
 class Run(object):
     """
     Run project
     """
-    menu = "\nPLANAR IMPLEMENTATION\n"\
+    menu = "\nK-D IMPLEMENTATION\n"\
         "1: List points\n"\
         "2: Bruteforce\n"\
         "3. Recursion\n"\
-        "4. Recursion optimized\n"\
-        "5. Recursion with Matplotlib\n"\
         "6: Add points manually\n"\
         "7: Add points from file\n"\
         "8. Remove points\n"\
@@ -24,12 +21,13 @@ class Run(object):
         "X: Exit"
 
     def __init__(self):
+        self.dim = 1
         self.points = []
 
     def setup(self):
         """Run setup"""
         print("\nSETUP\n-----")
-        filename = "input.txt"
+        filename = "input_kd.txt"
 
         print("\nEnter items manually or from file?")
         print("1: Manually")
@@ -89,7 +87,7 @@ class Run(object):
         print("BRUTE FORCE\n")
 
         if len(self.points) > 1:
-            pairs = bf_pairs(self.points)
+            pairs = bf_pairlist_kd(self.points)
             pairs.sort(key=lambda tup: tup[2])
             self.print_pairs(pairs)
         else:
@@ -100,51 +98,39 @@ class Run(object):
         print("RECURSION\n")
 
         if len(self.points) > 1:
-            result = closest_pair(self.points)
+            result = closest_pair_kd(self.points)
             point1, point2 = result['pair']
             dist = result['distance']
             self.print_pairs([(point1, point2, dist)])
         else:
             print("Must have two or more points.")
 
-    def recursion_plt(self):
-        """Matpotlib visual for divide and conquer"""
-        subtitle = "RECURSION WITH MATPLOTLIB\n"
-        print(subtitle)
+    def pad_point(self, point, dim):
+        point_dim = len(point)
+        for d in range(point_dim, dim):
+            point += (0,)
 
-        if len(self.points) > 1:
-            pause_t = 1.5
+        return point
 
-            print("Recursion pause time (sec)?")
-            while True:
-                try:
-                    pause_t = float(self.input())
-                    break
-                except:
-                    print("Must be a number.")
-                    continue
+    def pad_points(self, points, dim):
+        for i in range(len(points)):
+            points[i] = self.pad_point(points[i], dim)
 
-            self.clear_screen()
-            print(subtitle)
+    def add_point(self, point):
+        point_dim = len(point)
 
-            result = closest_pair_opt_plt(self.points, pause_t)
-            point1, point2 = result['pair']
-            dist = result['distance']
-            self.print_pairs([(point1, point2, dist)])
+        # pad point tuple if dimension is less
+        if point_dim < self.dim:
+            point = self.pad_point(point, self.dim)
+        # pad all self.points if new point has greater dimensions
+        elif point_dim > self.dim:
+            self.pad_points(self.points, point_dim)
+            self.dim = point_dim
+
+        if point in self.points:
+            raise ValueError("Duplicate point.")
         else:
-            print("Must have two or more points.")
-
-    def recursion_opt(self):
-        """Print the closest pair via divide and conquer"""
-        print("RECURSION OPTIMIZED\n")
-
-        if len(self.points) > 1:
-            result = closest_pair_opt(self.points)
-            point1, point2 = result['pair']
-            dist = result['distance']
-            self.print_pairs([(point1, point2, dist)])
-        else:
-            print("Must have two or more points.")
+            self.points.append(point)
 
     def add_manual(self):
         """Add to self.points manually"""
@@ -153,7 +139,7 @@ class Run(object):
         while True:
             self.clear_screen()
             self.print_points(self.points, "POINTS")
-            print("\nFormat: [X] [Y]\nEnter X to stop")
+            print("\nFormat: [A] [B] ... [N]\nEnter X to stop")
 
             if err_msg:
                 print(err_msg)
@@ -166,14 +152,8 @@ class Run(object):
                 break
 
             try:
-                x, y = self.sanitize_input(data)
-                point = Point(x, y)
-
-                if point in self.points:
-                    raise ValueError("Duplicate point.")
-                else:
-                    self.points.append(Point(x, y))
-
+                point = self.sanitize_input(data)
+                self.add_point(point)
                 err_msg = ""
             except Exception as err:
                 err_msg = "Invalid input. " + str(err)
@@ -193,13 +173,11 @@ class Run(object):
             print()
             for i, line in enumerate(file):
                 try:
-                    x, y = self.sanitize_input(line)
-                    point = Point(x, y)
-
+                    point = self.sanitize_input(line)
                     if point in self.points:
                         raise ValueError("Duplicate point.")
                     else:
-                        self.points.append(Point(x, y))
+                        self.points.append(point)
                 except Exception as err:
                     err_msg += f"\nInvalid input at line {i}. " + str(err)
 
@@ -211,21 +189,15 @@ class Run(object):
 
     def sanitize_input(self, data):
         """Return valid float input. Else raises ValueError"""
-        x, y = 0, 0
-        data = data.split()
-
         if data:
-            if len(data) < 2:
-                raise ValueError("Missing x.")
-
             try:
-                x, y = float(data[0]), float(data[1])
+                data = tuple(map(float, data.split()))
             except:
                 raise ValueError("Value must be a number.")
         else:
             raise ValueError("Invalid input.")
 
-        return x, y
+        return data
 
     def remove_points(self):
         """Remove values in self.points manually"""
@@ -234,7 +206,7 @@ class Run(object):
         while True:
             self.clear_screen()
             self.print_points(self.points, "POINTS")
-            print("\nFormat: [X] [Y]\nEnter X to stop")
+            print("\nFormat: [A] [B] ... [N]\nEnter X to stop")
 
             if err_msg:
                 print(err_msg)
@@ -247,29 +219,28 @@ class Run(object):
                 break
 
             try:
-                x, y = self.sanitize_input(data)
-                point = Point(x, y)
-
+                point = self.sanitize_input(data)
                 try:
                     self.points.remove(point)
                 except:
                     pass
-
-                err_msg = ""
             except Exception as err:
                 err_msg = "Invalid input. " + str(err)
 
     def clear_points(self):
+        self.dim = 1
         self.points = []
         print("All points removed.")
 
     def print_points(self, points, title=None):
         """Print points in tabulated format"""
         if points:
-            labels = ["X", "Y"]
+            dim = len(points[0])
+
+            labels = [f"{d+1}D" for d in range(dim)]
             width = 7
-            fmt_label = "{:>{w}} {:>{w}}"
-            fmt_data = "{:>{w}.1f} {:>{w}.1f}"
+            fmt_label = "{:>{w}} " * dim
+            fmt_data = "{:>{w}.1f} " * dim
 
             if title:
                 print(title, end="\n\n")
@@ -279,17 +250,19 @@ class Run(object):
             print(fmt_label.format(*bar, w=width))
 
             for point in points:
-                print(fmt_data.format(point.x, point.y, w=width))
+                print(fmt_data.format(*point, w=width))
         else:
             print("EMPTY")
 
     def print_pairs(self, pairs, title=None):
         """Print points in tabulated format"""
         if pairs:
-            labels = ["X1", "Y1", "X2", "Y2", "DIST"]
+            dim = len(pairs[0][0])
+            labels = [f"P{p+1}.{d+1}D" for p in range(2) for d in range(dim)]
+            labels += ["DIST"]
             width = 7
-            fmt_label = "{:>{w}} {:>{w}} {:>{w}} {:>{w}} {:>{w}}"
-            fmt_data = "{:>{w}.1f} {:>{w}.1f} {:>{w}.1f} {:>{w}.1f} {:>{w}.1f}"
+            fmt_label = "{:>{w}} " * ((2*dim) + 1)
+            fmt_data = "{:>{w}.1f} " * ((2*dim) + 1)
 
             if title:
                 print(title, end="\n\n")
@@ -299,7 +272,7 @@ class Run(object):
             print(fmt_label.format(*bar, w=width))
 
             for p1, p2, dist in pairs:
-                print(fmt_data.format(p1.x, p1.y, p2.x, p2.y, dist, w=width))
+                print(fmt_data.format(*p1, *p2, dist, w=width))
         else:
             print("EMPTY")
 

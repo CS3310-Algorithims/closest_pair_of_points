@@ -115,9 +115,9 @@ class TestClosestPairPoints(unittest.TestCase):
             self.assertEqual(bf_min["distance"], 0)
             self.assertEqual(re_min["distance"], 0)
 
-    def test_bruteforce_matches_recursion_n1000(self):
-        n = 1000
-        repeat = 10
+    def test_bruteforce_matches_recursion_n100(self):
+        n = 100
+        repeat = 100
 
         # gen list of lists
         for i in range(repeat):
@@ -133,9 +133,9 @@ class TestClosestPairPoints(unittest.TestCase):
             self.assertEqual(bf_min["distance"], re_min["distance"])
             self.assertEqual(bf_min["distance"], re_opt_min["distance"])
 
-    def test_bruteforce_matches_recursion_vertical_n1000(self):
-        n = 1000
-        repeat = 10
+    def test_bruteforce_matches_recursion_vertical_n100(self):
+        n = 100
+        repeat = 100
 
         # gen list of lists
         for i in range(repeat):

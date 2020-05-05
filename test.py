@@ -2,11 +2,12 @@
 All unit tests
 """
 import unittest
-from tests import closest_pair_points
+from tests import closest_pair_points, closest_pair_kd
 
 
 MODULES = [
-    closest_pair_points
+    closest_pair_points,
+    closest_pair_kd
 ]
 
 

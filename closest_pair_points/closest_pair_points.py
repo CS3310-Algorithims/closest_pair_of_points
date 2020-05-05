@@ -1,11 +1,12 @@
 """
-Closest Pair of Point module
-    - Point class
-    - Bruteforce closest pair of points
-    - Recursive closest pair of points
+Closest Pair of Points XY Plane
+    - closest_pair: Divide and Conquer in xy plane
+    - bf_closest_pair: Brute force in xy plane
 """
 import math
 import random
+
+from .utils import min_of_pairs
 
 
 class Point(object):
@@ -32,13 +33,9 @@ class Point(object):
     @staticmethod
     def get_unique_points(size):
         """Generate list of random and unique points"""
-        uniques = random.sample(range(0, 10 * size), 2 * size)
-        return [Point(uniques[i], uniques[size + i]) for i in range(size)]
-
-
-def min_of_pairs(pair_a, pair_b):
-    """Return closest pair of Points of two pair of Points"""
-    return pair_a if pair_a["distance"] <= pair_b["distance"] else pair_b
+        x = random.sample(range(-size*10, size*10), size)
+        y = random.sample(range(-size*10, size*10), size)
+        return [Point(a, b) for a, b in zip(x, y)]
 
 
 def bf_closest_pair(points):
