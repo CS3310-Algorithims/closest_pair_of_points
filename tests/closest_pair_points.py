@@ -8,9 +8,9 @@ from closest_pair_points import Point, bf_closest_pair, closest_pair,\
     closest_pair_opt
 
 
-class TestClosestPairPoints(unittest.TestCase):
+class TestClosestPairPlanar(unittest.TestCase):
     """
-    Tests for cloest pair of points
+    Tests for cloest pair of points in XY plane
     """
     # class attributes
 
@@ -20,9 +20,7 @@ class TestClosestPairPoints(unittest.TestCase):
         """
 
     def test_list_invalid_raise_exception(self):
-        """
-        Test empty list and list of one Point
-        """
+        """0 or 1 point should raise exeption"""
         list_one = [Point(1, 1)]
 
         with self.assertRaises(IndexError):
@@ -32,6 +30,7 @@ class TestClosestPairPoints(unittest.TestCase):
             closest_pair(list_one)
 
     def test_list_two(self):
+        """Match 2 points hardcoded list"""
         list_two = [Point(0, 1), Point(1, 0)]
 
         min_answer = {"distance": Point.distance(
@@ -45,6 +44,7 @@ class TestClosestPairPoints(unittest.TestCase):
         self.assertEqual(re_opt_min, min_answer)
 
     def test_list_three(self):
+        """Match 3 points hardcoded list"""
         list_three = [Point(0, 1), Point(2, 3), Point(1, 0)]
 
         min_answer = {"distance": Point.distance(
@@ -58,6 +58,7 @@ class TestClosestPairPoints(unittest.TestCase):
         self.assertEqual(re_opt_min, min_answer)
 
     def test_list_four(self):
+        """Match 4 points hardcoded list"""
         list_four = [Point(0, 1), Point(2, 3), Point(4, 5), Point(1, 0)]
 
         min_answer = {"distance": Point.distance(
@@ -71,6 +72,7 @@ class TestClosestPairPoints(unittest.TestCase):
         self.assertEqual(re_opt_min, min_answer)
 
     def test_list_duplicate_points(self):
+        """Match 4 points with duplicate point hardcoded list"""
         list_dup = [Point(0, 1), Point(2, 3), Point(4, 5), Point(0, 1)]
 
         min_answer = {"distance": Point.distance(
@@ -87,6 +89,7 @@ class TestClosestPairPoints(unittest.TestCase):
         self.assertEqual(re_opt_min, min_answer)
 
     def test_bruteforce_matches_recursion(self):
+        """Points size n from 2 to 100"""
         # gen list of lists
         for i in range(5, 100):
             bf_list = Point.get_unique_points(i)
@@ -102,7 +105,7 @@ class TestClosestPairPoints(unittest.TestCase):
             self.assertEqual(bf_min["distance"], re_opt_min["distance"])
 
     def test_bruteforce_matches_recursion_w_dups(self):
-        """Duplicate test does not include optimized recursion"""
+        """Points size n from 2 to 100 with duplicate point"""
         # gen list of lists
         for i in range(5, 100):
             bf_list = Point.get_unique_points(i)
@@ -116,6 +119,7 @@ class TestClosestPairPoints(unittest.TestCase):
             self.assertEqual(re_min["distance"], 0)
 
     def test_bruteforce_matches_recursion_n100(self):
+        """Points of size n=100 reapeating 100 times"""
         n = 100
         repeat = 100
 
@@ -134,6 +138,7 @@ class TestClosestPairPoints(unittest.TestCase):
             self.assertEqual(bf_min["distance"], re_opt_min["distance"])
 
     def test_bruteforce_matches_recursion_vertical_n100(self):
+        """Vertical points of size n=100 reapeating 100 times"""
         n = 100
         repeat = 100
 

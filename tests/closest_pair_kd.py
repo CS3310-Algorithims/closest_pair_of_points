@@ -10,9 +10,9 @@ from closest_pair_points import bf_closest_pair_kd, closest_pair_kd,\
 from closest_pair_points.utils import distance
 
 
-class TestClosestPairPoints(unittest.TestCase):
+class TestClosestPairKD(unittest.TestCase):
     """
-    Tests for cloest pair of points
+    Tests for cloest pair of points for kth dimensions
     """
     random.seed(0)
 
@@ -34,7 +34,7 @@ class TestClosestPairPoints(unittest.TestCase):
                 closest_pair_kd(list_one)
 
     def test_bruteforce_matches_recursion(self):
-        """Points at dim=1,2,3 for points n from 2 to 100"""
+        """Dimension=1, 2, 3 for points size n from 2 to 100"""
         min_n, max_n = 2, 100
         for dim in range(1, self.dimensions + 1):
             # gen list of lists
@@ -49,7 +49,7 @@ class TestClosestPairPoints(unittest.TestCase):
                 self.assertEqual(bf_min["distance"], re_min["distance"])
 
     def test_bruteforce_matches_recursion_w_dups(self):
-        """Points at dim=1,2,3 for points n from 2 to 100 with dups"""
+        """Dimension=1, 2, 3 for points size n from 2 to 100 with dups"""
         min_n, max_n = 2, 100
 
         for dim in range(1, self.dimensions + 1):
@@ -66,7 +66,7 @@ class TestClosestPairPoints(unittest.TestCase):
                 self.assertEqual(re_min["distance"], 0)
 
     def test_bruteforce_matches_recursion_n100(self):
-        """Points at dim=1,2,3 for points n=100 reapeating 100 times"""
+        """Dimension=1, 2, 3 for points size n=100 reapeating 100 times"""
         n = 100
         repeat = 100
         for dim in range(1, self.dimensions + 1):
