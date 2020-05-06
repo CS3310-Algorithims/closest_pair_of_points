@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 import random
 import time
 
-from closest_pair_points import Point, bf_closest_pair, closest_pair,\
-    closest_pair_opt
+from closest_pair import Point, bf_closest_pair_2d, closest_pair_2d,\
+    closest_pair_2d_opt
 
 
 class Benchmark(object):
@@ -98,7 +98,7 @@ class Benchmark(object):
         for i in range(len(lists_bf)):
             # benchmarking
             start_time = time.perf_counter()
-            answer = bf_closest_pair(lists_bf[i])
+            answer = bf_closest_pair_2d(lists_bf[i])
             end_time = time.perf_counter()
 
             # add time diff to timings
@@ -154,7 +154,7 @@ class Benchmark(object):
         for i in range(len(lists_re)):
             # benchmarking
             start_time = time.perf_counter()
-            answer = closest_pair(lists_re[i])
+            answer = closest_pair_2d(lists_re[i])
             end_time = time.perf_counter()
 
             # add time diff to timings
@@ -214,7 +214,7 @@ class Benchmark(object):
         for i in range(len(lists_re)):
             # benchmarking
             start_time = time.perf_counter()
-            answer = closest_pair(lists_re[i])
+            answer = closest_pair_2d(lists_re[i])
             end_time = time.perf_counter()
 
             # add time diff to timings
@@ -270,7 +270,7 @@ class Benchmark(object):
         for i in range(len(lists_re)):
             # benchmarking
             start_time = time.perf_counter()
-            answer = closest_pair_opt(lists_re[i])
+            answer = closest_pair_2d_opt(lists_re[i])
             end_time = time.perf_counter()
 
             # add time diff to timings
@@ -330,7 +330,7 @@ class Benchmark(object):
         for i in range(len(lists_re)):
             # benchmarking
             start_time = time.perf_counter()
-            answer = closest_pair_opt(lists_re[i])
+            answer = closest_pair_2d_opt(lists_re[i])
             end_time = time.perf_counter()
 
             # add time diff to timings
@@ -394,7 +394,7 @@ class Benchmark(object):
         for i in range(len(lists_re)):
             # benchmarking
             start_time = time.perf_counter()
-            answer = closest_pair(lists_re[i])
+            answer = closest_pair_2d(lists_re[i])
             end_time = time.perf_counter()
 
             # add time diff to timings
@@ -414,7 +414,7 @@ class Benchmark(object):
         for i in range(len(lists_re_opt)):
             # benchmarking
             start_time = time.perf_counter()
-            answer = closest_pair_opt(lists_re_opt[i])
+            answer = closest_pair_2d_opt(lists_re_opt[i])
             end_time = time.perf_counter()
 
             # add time diff to timings
@@ -498,7 +498,7 @@ class Benchmark(object):
         for i in range(len(lists_bf)):
             # benchmarking
             start_time = time.perf_counter()
-            answer = bf_closest_pair(lists_bf[i])
+            answer = bf_closest_pair_2d(lists_bf[i])
             end_time = time.perf_counter()
 
             # add time diff to timings
@@ -518,7 +518,7 @@ class Benchmark(object):
         for i in range(len(lists_re)):
             # benchmarking
             start_time = time.perf_counter()
-            answer = closest_pair(lists_re[i])
+            answer = closest_pair_2d(lists_re[i])
             end_time = time.perf_counter()
 
             # add time diff to timings
@@ -538,7 +538,7 @@ class Benchmark(object):
         for i in range(len(lists_re_opt)):
             # benchmarking
             start_time = time.perf_counter()
-            answer = closest_pair_opt(lists_re[i])
+            answer = closest_pair_2d_opt(lists_re[i])
             end_time = time.perf_counter()
 
             # add time diff to timings
@@ -576,7 +576,7 @@ class Benchmark(object):
 
 
 if __name__ == "__main__":
-    menu = "\nCLOSEST PAIR OF POINTS\n"\
+    menu = "\nCLOSEST PAIR OF POINTS 2D\n"\
         "\nWhich task to benchmark?\n"\
         "1: Bruteforce\n"\
         "2: Recursion\n"\

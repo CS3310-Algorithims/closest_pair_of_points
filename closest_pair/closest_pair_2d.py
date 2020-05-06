@@ -1,7 +1,7 @@
 """
 Closest Pair of Points XY Plane
-    - closest_pair: Divide and Conquer in xy plane
-    - bf_closest_pair: Brute force in xy plane
+    - closest_pair_2d: Divide and Conquer in xy plane
+    - bf_closest_pair_2d: Brute force in xy plane
 """
 import math
 import random
@@ -24,6 +24,17 @@ class Point(object):
     def __eq__(self, o):
         return self.x == o.x and self.y == o.y
 
+    def __getitem__(self, key):
+        if key == 0:
+            return self.x
+        elif key == 1:
+            return self.y
+        else:
+            raise IndexError()
+
+    def __len__(self):
+        return 2
+
     @staticmethod
     def distance(point_a, point_b):
         """Return dist of two points"""
@@ -38,7 +49,7 @@ class Point(object):
         return [Point(a, b) for a, b in zip(x, y)]
 
 
-def bf_closest_pair(points):
+def bf_closest_pair_2d(points):
     """
     Wrapper for bruteforce approach to get minimal distance of two points.
 
@@ -50,10 +61,10 @@ def bf_closest_pair(points):
     ------
     {"distance": float, "pair": Point}
     """
-    return bf_closest(points, 0, len(points) - 1)
+    return bf_closest_2d(points, 0, len(points) - 1)
 
 
-def bf_closest(points, low, high):
+def bf_closest_2d(points, low, high):
     """
     Bruteforce approach to get minimal distance of two points.
     Minumum size is 2 (high - low >= 1), else exception IndexError is raised.
@@ -91,9 +102,9 @@ def bf_closest(points, low, high):
     return {"distance": min_dist, "pair": min_points}
 
 
-def closest_pair(points):
+def closest_pair_2d(points):
     """
-    Find closest pair in points using divide and conquer.
+    Find closest_2d pair in points using divide and conquer.
 
     Timsort: O(nlogn)
     Closest: O(nlogn)
@@ -107,12 +118,12 @@ def closest_pair(points):
     points_xsorted = sorted(points, key=lambda point: point.x)
     points_ysorted = sorted(points, key=lambda point: point.y)
 
-    return closest(points_xsorted, 0, len(points_xsorted) - 1, points_ysorted)
+    return closest_2d(points_xsorted, 0, len(points_xsorted) - 1, points_ysorted)
 
 
-def closest(points_xsorted, low, high, points_ysorted):
+def closest_2d(points_xsorted, low, high, points_ysorted):
     """
-    Recursively find the closest pair of points in points_xsorted and with
+    Recursively find the closest_2d pair of points in points_xsorted and with
     points_ysorted for the strip in the middle.
 
     Recurrence relation: T(n) = 2T(n/2) + n
@@ -131,7 +142,7 @@ def closest(points_xsorted, low, high, points_ysorted):
     """
     # base case: use brute force on size 3 or less
     if high - low + 1 <= 3:
-        return bf_closest(points_xsorted, low, high)
+        return bf_closest_2d(points_xsorted, low, high)
 
     # initializations
     mid = (low + high) // 2
@@ -146,8 +157,8 @@ def closest(points_xsorted, low, high, points_ysorted):
             points_yright.append(point)
 
     # recurse to find local minimal pairs on left and right
-    min_pair_left = closest(points_xsorted, low, mid, points_yleft)
-    min_pair_right = closest(points_xsorted, mid + 1, high, points_yright)
+    min_pair_left = closest_2d(points_xsorted, low, mid, points_yleft)
+    min_pair_right = closest_2d(points_xsorted, mid + 1, high, points_yright)
 
     # get the smaller of the two local minimal pairs
     min_pair = min_of_pairs(min_pair_left, min_pair_right)
@@ -157,12 +168,12 @@ def closest(points_xsorted, low, high, points_ysorted):
     strip = [p for p in points_ysorted if abs(p.x - mid_point.x) < delta]
 
     # return min_pair or smaller if found in strip
-    return strip_closest(strip, min_pair)
+    return strip_closest_2d(strip, min_pair)
 
 
-def strip_closest(strip, min_pair):
+def strip_closest_2d(strip, min_pair):
     """
-    Find closest pair in strip. Sparsity geneeralization by Jon Louis Bentley
+    Find closest_2d pair in strip. Sparsity geneeralization by Jon Louis Bentley
     and Michael Ian Shamos.
 
     Time Complexity: O(7n)
@@ -177,7 +188,7 @@ def strip_closest(strip, min_pair):
     Need to only compare at most 7 comparisons per point by correctness proof
 
     Let a list be bisected into two halves.
-    Let d = delta, the closest pair's distance of two halves in the list.
+    Let d = delta, the closest_2d pair's distance of two halves in the list.
     Then create a strip from the middle to delta distance on either side.
     This strip has been pre-sorted by y-coordinate.
     Populate points where x-coord from middle to within delta distance.
@@ -225,9 +236,9 @@ def strip_closest(strip, min_pair):
     return {"distance": strip_min_dist, "pair": strip_min_points}
 
 
-def closest_pair_opt(points):
+def closest_pair_2d_opt(points):
     """
-    Find closest pair in points using divide and conquer using optimized strip
+    Find closest_2d pair in points using divide and conquer using optimized strip
     calculation.
     Optimized version does not consider duplicate points.
 
@@ -248,7 +259,7 @@ def closest_pair_opt(points):
 
 def closest_opt(points_xsorted, low, high, points_ysorted):
     """
-    Recursively find the closest pair of points in points_xsorted and with
+    Recursively find the closest_2d pair of points in points_xsorted and with
     points_ysorted for the strip in the middle.
     Uses optimized strip calculation.
 
@@ -268,7 +279,7 @@ def closest_opt(points_xsorted, low, high, points_ysorted):
     """
     # base case: use brute force on size 3 or less
     if high - low + 1 <= 3:
-        return bf_closest(points_xsorted, low, high)
+        return bf_closest_2d(points_xsorted, low, high)
 
     # initializations
     mid = (low + high) // 2
@@ -300,7 +311,7 @@ def closest_opt(points_xsorted, low, high, points_ysorted):
 
 def strip_closest_opt(strip_left, strip_right, min_pair):
     """
-    Find closest pair in strip using hopscotch approach by Jose C. Pereira
+    Find closest_2d pair in strip using hopscotch approach by Jose C. Pereira
     and Fernando G. Lobo.
 
     Time Complexity: O(2n)
@@ -319,7 +330,7 @@ def strip_closest_opt(strip_left, strip_right, min_pair):
     Let d = delta and in a d x 2d box where left is d x d and right is d x d.
     Suppose the left side has a point X of interest and the right side has a
     maximum of 4 points of interest. Then, point X need only to compare the
-    closest 2/4 points. The other farther 2 points are larger than delta.
+    closest_2d 2/4 points. The other farther 2 points are larger than delta.
     Similarly, the same reasoning can be applied when right has 3 points.
     Therefore, only 2 comparisons are needed per point on either side.
 
@@ -408,16 +419,16 @@ def strip_closest_opt(strip_left, strip_right, min_pair):
 # METHODS BELOW FOR VISUALIZATION RUN PROGRAM
 # -------------------------------------------
 
-def bf_pairs(points):
+def bf_pairs_2d(points):
     """
     Creates a permutation list of all pairs of points with distance.
     Used for visual run program.
     Return [(Point, Point, float)]
     """
-    return _bf_pairs(points, 0, len(points) - 1)
+    return _bf_pairs_2d(points, 0, len(points) - 1)
 
 
-def _bf_pairs(points, low, high):
+def _bf_pairs_2d(points, low, high):
     """
     Creates a permutation list of all pairs of points with distance.
     Used for visual run program.
@@ -439,7 +450,7 @@ def _bf_pairs(points, low, high):
     return pairs
 
 
-def closest_pair_opt_plt(points, pause_t):
+def closest_pair_2d_opt_plt(points, pause_t):
     """
     Matplotlib version to show how middle points are selected.
     Used for visual run program.
@@ -489,9 +500,9 @@ def closest_pair_opt_plt(points, pause_t):
                      linewidth=0, color='aqua', fill=False)
     ax.add_patch(rect)
 
-    # do closest pair of points with matplotlib
-    min_pair = closest_opt_plt(points_xsorted, 0, len(points_xsorted) - 1,
-                               points_ysorted, ax, pause_t)
+    # do closest_2d pair of points with matplotlib
+    min_pair = closest_2d_opt_plt(points_xsorted, 0, len(points_xsorted) - 1,
+                                  points_ysorted, ax, pause_t)
 
     # show plot after recursion
     plt.show(block=True)
@@ -499,7 +510,7 @@ def closest_pair_opt_plt(points, pause_t):
     return min_pair
 
 
-def closest_opt_plt(points_xsorted, low, high, points_ysorted, ax, pause_t):
+def closest_2d_opt_plt(points_xsorted, low, high, points_ysorted, ax, pause_t):
     """
     Matplotlib version to show minimal pair at each recursion level.
     Used for visual run program.
@@ -516,7 +527,7 @@ def closest_opt_plt(points_xsorted, low, high, points_ysorted, ax, pause_t):
 
     # base case: use brute force on size 3 or less
     if high - low + 1 <= 3:
-        return bf_closest(points_xsorted, low, high)
+        return bf_closest_2d(points_xsorted, low, high)
 
     # initializations
     mid = (low + high) // 2
@@ -531,8 +542,8 @@ def closest_opt_plt(points_xsorted, low, high, points_ysorted, ax, pause_t):
             points_yright.append(point)
 
     # recurse to find local minimal pairs on left
-    min_pair_left = closest_opt_plt(points_xsorted, low, mid,
-                                    points_yleft, ax, pause_t)
+    min_pair_left = closest_2d_opt_plt(points_xsorted, low, mid,
+                                       points_yleft, ax, pause_t)
 
     # get last plot line and rectangle
     line = ax.get_lines()[-2]
@@ -560,8 +571,8 @@ def closest_opt_plt(points_xsorted, low, high, points_ysorted, ax, pause_t):
     vline.set_linewidth(1)
 
     # recurse to find local minimal pairs on right
-    min_pair_right = closest_opt_plt(points_xsorted, mid + 1, high,
-                                     points_yright, ax, pause_t)
+    min_pair_right = closest_2d_opt_plt(points_xsorted, mid + 1, high,
+                                        points_yright, ax, pause_t)
 
     # plot minimal pair on the right
     min_points = min_pair_right['pair']

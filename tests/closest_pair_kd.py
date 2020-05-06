@@ -5,9 +5,8 @@ import copy
 import random
 import unittest
 
-from closest_pair_points import bf_closest_pair_kd, closest_pair_kd,\
-    gen_unique_kd_points
-from closest_pair_points.utils import distance
+from closest_pair import bf_closest_pair_kd, closest_pair_kd,\
+    gen_unique_kd_points, distance
 
 
 class TestClosestPairKD(unittest.TestCase):

@@ -4,8 +4,8 @@ Unit tests
 import copy
 import unittest
 
-from closest_pair_points import Point, bf_closest_pair, closest_pair,\
-    closest_pair_opt
+from closest_pair import Point, bf_closest_pair_2d, closest_pair_2d,\
+    closest_pair_2d_opt
 
 
 class TestClosestPairPlanar(unittest.TestCase):
@@ -24,10 +24,10 @@ class TestClosestPairPlanar(unittest.TestCase):
         list_one = [Point(1, 1)]
 
         with self.assertRaises(IndexError):
-            bf_closest_pair([])
-            bf_closest_pair(list_one)
-            closest_pair([])
-            closest_pair(list_one)
+            bf_closest_pair_2d([])
+            bf_closest_pair_2d(list_one)
+            closest_pair_2d([])
+            closest_pair_2d(list_one)
 
     def test_list_two(self):
         """Match 2 points hardcoded list"""
@@ -35,9 +35,9 @@ class TestClosestPairPlanar(unittest.TestCase):
 
         min_answer = {"distance": Point.distance(
             list_two[0], list_two[1]), "pair": (list_two[0], list_two[1])}
-        bf_min = bf_closest_pair(list_two)
-        re_min = closest_pair(list_two)
-        re_opt_min = closest_pair_opt(list_two)
+        bf_min = bf_closest_pair_2d(list_two)
+        re_min = closest_pair_2d(list_two)
+        re_opt_min = closest_pair_2d_opt(list_two)
 
         self.assertEqual(bf_min, min_answer)
         self.assertEqual(re_min, min_answer)
@@ -49,9 +49,9 @@ class TestClosestPairPlanar(unittest.TestCase):
 
         min_answer = {"distance": Point.distance(
             list_three[0], list_three[2]), "pair": (list_three[0], list_three[2])}
-        bf_min = bf_closest_pair(list_three)
-        re_min = closest_pair(list_three)
-        re_opt_min = closest_pair_opt(list_three)
+        bf_min = bf_closest_pair_2d(list_three)
+        re_min = closest_pair_2d(list_three)
+        re_opt_min = closest_pair_2d_opt(list_three)
 
         self.assertEqual(bf_min, min_answer)
         self.assertEqual(re_min, min_answer)
@@ -63,9 +63,9 @@ class TestClosestPairPlanar(unittest.TestCase):
 
         min_answer = {"distance": Point.distance(
             list_four[0], list_four[3]), "pair": (list_four[0], list_four[3])}
-        bf_min = bf_closest_pair(list_four)
-        re_min = closest_pair(list_four)
-        re_opt_min = closest_pair_opt(list_four)
+        bf_min = bf_closest_pair_2d(list_four)
+        re_min = closest_pair_2d(list_four)
+        re_opt_min = closest_pair_2d_opt(list_four)
 
         self.assertEqual(bf_min, min_answer)
         self.assertEqual(re_min, min_answer)
@@ -77,9 +77,9 @@ class TestClosestPairPlanar(unittest.TestCase):
 
         min_answer = {"distance": Point.distance(
             list_dup[0], list_dup[3]), "pair": (list_dup[0], list_dup[3])}
-        bf_min = bf_closest_pair(list_dup)
-        re_min = closest_pair(list_dup)
-        re_opt_min = closest_pair_opt(list_dup)
+        bf_min = bf_closest_pair_2d(list_dup)
+        re_min = closest_pair_2d(list_dup)
+        re_opt_min = closest_pair_2d_opt(list_dup)
 
         self.assertEqual(bf_min["distance"], 0)
         self.assertEqual(re_min["distance"], 0)
@@ -96,9 +96,9 @@ class TestClosestPairPlanar(unittest.TestCase):
             re_list = copy.deepcopy(bf_list)
             re_opt_list = copy.deepcopy(bf_list)
 
-            bf_min = bf_closest_pair(bf_list)
-            re_min = closest_pair(re_list)
-            re_opt_min = closest_pair_opt(re_opt_list)
+            bf_min = bf_closest_pair_2d(bf_list)
+            re_min = closest_pair_2d(re_list)
+            re_opt_min = closest_pair_2d_opt(re_opt_list)
 
             self.assertNotEqual(bf_min["distance"], 0)
             self.assertEqual(bf_min["distance"], re_min["distance"])
@@ -112,8 +112,8 @@ class TestClosestPairPlanar(unittest.TestCase):
             bf_list.append(copy.deepcopy(bf_list[0]))  # add duplicate point
             re_list = copy.deepcopy(bf_list)
 
-            bf_min = bf_closest_pair(bf_list)
-            re_min = closest_pair(re_list)
+            bf_min = bf_closest_pair_2d(bf_list)
+            re_min = closest_pair_2d(re_list)
 
             self.assertEqual(bf_min["distance"], 0)
             self.assertEqual(re_min["distance"], 0)
@@ -129,9 +129,9 @@ class TestClosestPairPlanar(unittest.TestCase):
             re_list = copy.deepcopy(bf_list)
             re_opt_list = copy.deepcopy(bf_list)
 
-            bf_min = bf_closest_pair(re_list)
-            re_min = closest_pair(re_list)
-            re_opt_min = closest_pair_opt(re_opt_list)
+            bf_min = bf_closest_pair_2d(re_list)
+            re_min = closest_pair_2d(re_list)
+            re_opt_min = closest_pair_2d_opt(re_opt_list)
 
             self.assertNotEqual(bf_min["distance"], 0)
             self.assertEqual(bf_min["distance"], re_min["distance"])
@@ -151,9 +151,9 @@ class TestClosestPairPlanar(unittest.TestCase):
             re_list = copy.deepcopy(bf_list)
             re_opt_list = copy.deepcopy(bf_list)
 
-            bf_min = bf_closest_pair(re_list)
-            re_min = closest_pair(re_list)
-            re_opt_min = closest_pair_opt(re_opt_list)
+            bf_min = bf_closest_pair_2d(re_list)
+            re_min = closest_pair_2d(re_list)
+            re_opt_min = closest_pair_2d_opt(re_opt_list)
 
             self.assertNotEqual(bf_min["distance"], 0)
             self.assertEqual(bf_min["distance"], re_min["distance"])

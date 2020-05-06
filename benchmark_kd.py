@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import random
 import time
 
-from closest_pair_points import bf_closest_pair_kd, closest_pair_kd,\
+from closest_pair import bf_closest_pair_kd, closest_pair_kd,\
     gen_unique_kd_points
 
 
@@ -270,7 +270,7 @@ class Benchmark(object):
 
 
 if __name__ == "__main__":
-    menu = "\nCLOSEST PAIR OF POINTS\n"\
+    menu = "\nCLOSEST PAIR OF POINTS K-D\n"\
         "\nWhich task to benchmark?\n"\
         "1: Bruteforce\n"\
         "2: Recursion\n"\

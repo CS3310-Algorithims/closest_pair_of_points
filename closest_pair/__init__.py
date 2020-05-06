@@ -21,12 +21,12 @@ Closest Pair of Points
     distance: Calculate distance between two tuple of the same kth dimensions
     gen_unique_kd_points: Generate tuple points of size n in kth dimensions
 """
-from .closest_pair_points import bf_pairs
-from .closest_pair_points import bf_closest_pair
-from .closest_pair_points import closest_pair
-from .closest_pair_points import closest_pair_opt
-from .closest_pair_points import closest_pair_opt_plt
-from .closest_pair_points import Point
+from .closest_pair_2d import bf_pairs_2d
+from .closest_pair_2d import bf_closest_pair_2d
+from .closest_pair_2d import closest_pair_2d
+from .closest_pair_2d import closest_pair_2d_opt
+from .closest_pair_2d import closest_pair_2d_opt_plt
+from .closest_pair_2d import Point
 
 from .closest_pair_kd import bf_pairlist_kd
 from .closest_pair_kd import bf_closest_pair_kd
