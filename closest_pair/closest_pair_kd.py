@@ -130,8 +130,8 @@ def closest_kd(points_kd, dim, level):
     # divide points
     for d in range(dim):
         if d == level:
-            points_left[d] += points_kd[level][:mid]
-            points_right[d] += points_kd[level][mid:]
+            points_left[d] = points_kd[level][:mid]
+            points_right[d] = points_kd[level][mid:]
         else:
             for point in points_kd[d]:
                 if point[level] <= med[level]:

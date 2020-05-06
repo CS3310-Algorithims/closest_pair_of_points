@@ -14,7 +14,7 @@ class Point(object):
     Point class of 2d: x and y
     """
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, *args):
         self.x = x
         self.y = y
 

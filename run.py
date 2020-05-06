@@ -17,8 +17,9 @@ class Run(object):
         "3. K-D Recursion\n"\
         "4. 2D Planar matplotlib recursion\n"\
         "5: Change points manually\n"\
-        "6: Add points from file\n"\
-        "7. Remove all points\n"\
+        "6: Reduce dimensions\n"\
+        "7: Add points from file\n"\
+        "8. Remove all points\n"\
         "X: Exit"
 
     def __init__(self):
@@ -33,17 +34,22 @@ class Run(object):
         print("\nEnter items manually or from file?")
         print("1: Manually")
         print(f"2: From file {filename}")
-        choice = self.input()
+        print(f"3: From specific file")
 
-        while choice != "1" and choice != "2":
-            print("Invalid choice")
+        while True:
             choice = self.input()
 
-        if choice == "1":
-            print()
-            self.change_points()
-        else:
-            self.add_from_file(filename)
+            if choice == "1":
+                print()
+                self.change_points()
+            elif choice == "2":
+                self.add_from_file(filename)
+            elif choice == "3":
+                self.add_from_file()
+            else:
+                print("Invalid choice")
+                continue
+            break
 
     def start(self):
         """Run user interactive mode"""
@@ -69,11 +75,13 @@ class Run(object):
             elif choice == "5":
                 self.change_points()
             elif choice == "6":
+                self.reduce_points()
+            elif choice == "7":
                 clear = self.input("Clear previous points? (Y/N)")
                 if clear == "Y" or clear == "y":
                     self.clear_points()
                 self.add_from_file()
-            elif choice == "7":
+            elif choice == "8":
                 self.clear_points()
             else:
                 self.print_points(self.points, "POINTS")
@@ -130,16 +138,32 @@ class Run(object):
             # convert self.points to list of Point objects
             plt_points = []
             for point in self.points:
-                plt_points.append(Point(point[0], point[1]))
+                plt_points.append(Point(*point))
 
-            result = closest_pair_2d_opt_plt(plt_points, pause_t)
-            point1, point2 = result['pair']
-            dist = result['distance']
-            self.print_pairs([(point1, point2, dist)])
+            try:
+                result = closest_pair_2d_opt_plt(plt_points, pause_t)
+                point1, point2 = result['pair']
+                dist = result['distance']
+                self.print_pairs([(point1, point2, dist)])
+            except:
+                print("Matpotlib prematurely closed.")
         else:
             print("Must have two or more points.")
 
+    def sanitize_input(self, data):
+        """Return valid float input. Else raises ValueError"""
+        if data:
+            try:
+                data = tuple(map(float, data.split()))
+            except:
+                raise ValueError("Value must be a number.")
+        else:
+            raise ValueError("No input.")
+
+        return data
+
     def pad_point(self, point, dim):
+        """Pad a point with 0 up to specified dimension"""
         point_dim = len(point)
         for d in range(point_dim, dim):
             point += (0,)
@@ -147,10 +171,12 @@ class Run(object):
         return point
 
     def pad_points(self, points, dim):
+        """Pad a list of points with 0 up to specified dimension"""
         for i in range(len(points)):
             points[i] = self.pad_point(points[i], dim)
 
     def add_point(self, point):
+        """Add a point to points"""
         point_dim = len(point)
 
         # pad point tuple if dimension is less
@@ -167,13 +193,14 @@ class Run(object):
             self.points.append(point)
 
     def remove_point(self, point):
+        """Remove a point from self.points"""
         try:
             self.points.remove(point)
         except:
             pass
 
     def change_points(self):
-        """Add to self.points manually"""
+        """Change points manually"""
         err_msg = ""
 
         while True:
@@ -204,6 +231,31 @@ class Run(object):
             except Exception as err:
                 err_msg = "Invalid input. " + str(err)
 
+    def reduce_point(self, point, dim):
+        """Reduce a point to specified dimension"""
+        return point[:dim] if dim < len(point) else point
+
+    def reduce_points(self):
+        """"Reduce all points to specified dimension"""
+        # get dimension input
+        print("What dimension to reduce to?")
+        while True:
+            try:
+                dim = int(self.input())
+                break
+            except:
+                print("Must be a number.")
+                continue
+
+        # reduce all points
+        if dim < self.dim:
+            for i in range(len(self.points)):
+                self.points[i] = self.reduce_point(self.points[i], dim)
+                self.dim = dim
+
+        self.clear_screen()
+        self.print_points(self.points, "POINTS")
+
     def add_from_file(self, filename=None):
         """Add to self.points from file"""
         err_msg = ""
@@ -220,7 +272,8 @@ class Run(object):
             for i, line in enumerate(file):
                 try:
                     point = self.sanitize_input(line)
-                    self.add_point(point)
+                    if point:
+                        self.add_point(point)
                 except Exception as err:
                     err_msg += f"\nInvalid input at line {i}. " + str(err)
 
@@ -229,18 +282,6 @@ class Run(object):
 
         if err_msg:
             print(err_msg)
-
-    def sanitize_input(self, data):
-        """Return valid float input. Else raises ValueError"""
-        if data:
-            try:
-                data = tuple(map(float, data.split()))
-            except:
-                raise ValueError("Value must be a number.")
-        else:
-            raise ValueError("Invalid input.")
-
-        return data
 
     def remove_points(self):
         """Remove values in self.points manually"""
