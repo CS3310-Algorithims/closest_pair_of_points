@@ -7,7 +7,8 @@ import random
 import time
 
 from closest_pair import Point, bf_closest_pair_2d, closest_pair_2d,\
-    closest_pair_2d_opt
+    closest_pair_2d_opt, bf_closest_pair_kd, closest_pair_kd,\
+    gen_unique_kd_points
 
 
 class Benchmark(object):
@@ -36,10 +37,18 @@ class Benchmark(object):
         False if invalid choice, else True.
         """
         # array of benchmark methods
-        benchmarks = [self.bruteforce,
-                      self.recursion, self.recursion_vertical,
-                      self.recursion_opt, self.recursion_opt_vertical,
-                      self.re_vs_re_opt, self.bf_vs_recursion]
+        benchmarks = [
+            self.bruteforce_2d,
+            self.recursion_2d,
+            self.recursion_2d_vertical,
+            self.recursion_2d_opt,
+            self.recursion_2d_opt_vertical,
+            self.re_2d_vs_re_2d_opt,
+            self.bf_2d_vs_recursion_2d,
+            self.bruteforce_kd,
+            self.recursion_kd,
+            self.bf_kd_vs_recursion_kd
+        ]
 
         # try to convert choice to int
         try:
@@ -59,7 +68,7 @@ class Benchmark(object):
 
         return True
 
-    def bruteforce(self, fig=1):
+    def bruteforce_2d(self, fig=1):
         """
         Benchmarks bruteforce version of closest pair of points
 
@@ -115,7 +124,7 @@ class Benchmark(object):
         plt.title('Growth Rates: Bruteforce')
         plt.legend()  # show legend
 
-    def recursion(self, fig=2):
+    def recursion_2d(self, fig=2):
         """
         Benchmarks recursion version of closest pair of points
 
@@ -171,7 +180,7 @@ class Benchmark(object):
         plt.title('Growth Rates: Recursion')
         plt.legend()  # show legend
 
-    def recursion_vertical(self, fig=3):
+    def recursion_2d_vertical(self, fig=3):
         """
         Benchmarks recursion version of closest pair of points with
         vertical points only, ie all points have same x-coord.
@@ -231,7 +240,7 @@ class Benchmark(object):
         plt.title('Growth Rates: Recursion Vertical Points')
         plt.legend()  # show legend
 
-    def recursion_opt(self, fig=4):
+    def recursion_2d_opt(self, fig=4):
         """
         Benchmarks recursion optimized version of closest pair of points
 
@@ -287,7 +296,7 @@ class Benchmark(object):
         plt.title('Growth Rates: Recursion Optimized')
         plt.legend()  # show legend
 
-    def recursion_opt_vertical(self, fig=5):
+    def recursion_2d_opt_vertical(self, fig=5):
         """
         Benchmarks recursion optimized version of closest pair of points with
         vertical points only, ie all points have same x-coord.
@@ -348,7 +357,7 @@ class Benchmark(object):
         plt.title('Growth Rates: Recursion Optimized Vertical Points')
         plt.legend()  # show legend
 
-    def re_vs_re_opt(self, fig=6):
+    def re_2d_vs_re_2d_opt(self, fig=6):
         """
         Benchmarks recursion normal vs recursion optimized
 
@@ -447,7 +456,7 @@ class Benchmark(object):
         plt.title('Growth Rates: Recursion vs Recursion Optimized')
         plt.legend()  # show legend
 
-    def bf_vs_recursion(self, fig=7):
+    def bf_2d_vs_recursion_2d(self, fig=7):
         """
         Benchmarks bruteforce vs recursion vs recursion optimized of
         closest pair of points
@@ -574,17 +583,245 @@ class Benchmark(object):
                   'vs Recursion Optimized')
         plt.legend()  # show legend
 
+    def bruteforce_kd(self, fig=8):
+        """
+        Benchmarks bruteforce version of closest pair of points
+
+        Parameters
+        ----------
+        fig (int): Figure number for plot
+        """
+        dim = None
+        while True:
+            try:
+                dim = int(input("\nWhat dimensions?\n"))
+                break
+            except:
+                print("Dimensions must be a number")
+
+        sample_size = 13
+
+        # x and y cooardinates for graphs
+        n = [2**(i + 1) for i in range(sample_size)]
+        timings_bf = []
+
+        # headings variables
+        heading1 = "n input"
+        heading2 = "timings (seconds)"
+        pad_size = len(heading1) if len(
+            str(n[-1])) < len(heading1) else len(str(n[-1]))
+        sep = "-"
+
+        # benchmark bruteforce via lists
+        print(f"\nBRUTEFORCE {dim}D\n\n"
+              f"{heading1:<{pad_size}} {heading2}\n"
+              f"{sep * pad_size:<{pad_size}} {sep * len(heading2)}")
+
+        # generate lists of lists
+        for i in range(sample_size):
+            # create list of points
+            points = gen_unique_kd_points(n[i], dim)
+
+            # benchmarking
+            start_time = time.perf_counter()
+            answer = bf_closest_pair_kd(points)
+            end_time = time.perf_counter()
+
+            # add time diff to timings
+            duration = end_time - start_time
+            timings_bf.append(duration)
+
+            print(f"{n[i]:<{pad_size}} {duration}")
+
+        # graph results
+        plt.figure(fig)
+        plt.plot(n, timings_bf, label=f"Bruteforce {dim}D")
+
+        plt.xlabel('input size (n)')
+        plt.ylabel('timings (seconds)')
+        plt.title(f'Growth Rates: Bruteforce {dim}D')
+        plt.legend()  # show legend
+
+    def recursion_kd(self, fig=9):
+        """
+        Benchmarks normal recursion of closest pair of points
+
+        Parameters
+        ----------
+        fig (int): Figure number for plot
+        """
+        dim = None
+        while True:
+            try:
+                dim = int(input("\nWhat dimensions?\n"))
+                break
+            except:
+                print("Dimensions must be a number")
+
+        sample_size = 13
+
+        # x and y cooardinates for graphs
+        n = [2**(i + 1) for i in range(sample_size)]
+        timings_recur = []
+
+        # headings variables
+        heading1 = "n input"
+        heading2 = "timings (seconds)"
+        pad_size = len(heading1) if len(
+            str(n[-1])) < len(heading1) else len(str(n[-1]))
+        sep = "-"
+
+        # benchmark recursion via lists
+        print(f"\nRECURSION {dim}D\n\n"
+              f"{heading1:<{pad_size}} {heading2}\n"
+              f"{sep * pad_size:<{pad_size}} {sep * len(heading2)}")
+
+        # generate lists of lists
+        for i in range(sample_size):
+            # create list of points
+            points = gen_unique_kd_points(n[i], dim)
+
+            # benchmarking
+            start_time = time.perf_counter()
+            answer = closest_pair_kd(points)
+            end_time = time.perf_counter()
+
+            # add time diff to timings
+            duration = end_time - start_time
+            timings_recur.append(duration)
+
+            print(f"{n[i]:<{pad_size}} {duration}")
+
+        # graph results
+        plt.figure(fig)
+        plt.plot(n, timings_recur, label=f"Recursion {dim}D")
+        plt.xlabel('input size (n)')
+        plt.ylabel('timings (seconds)')
+        plt.title(f'Growth Rates: Recursion {dim}D')
+        plt.legend()  # show legend
+
+    def bf_kd_vs_recursion_kd(self, fig=10):
+        """
+        Benchmarks bruteforce vs recursion vs recursion optimized of
+        closest pair of points
+
+        Parameters
+        ----------
+        fig (int): Figure number for plot
+        """
+        dim = None
+        while True:
+            try:
+                dim = int(input("\nWhat dimensions?\n"))
+                break
+            except:
+                print("Dimensions must be a number")
+
+        print(f"\nBRUTEFORCE VS RECURSION {dim}D")
+
+        sample_size = 13
+
+        # x and y cooardinates for graphs
+        n = [2**(i + 1) for i in range(sample_size)]
+        timings_bf = []
+        timings_recur = []
+        lists_bf = []
+        lists_re = []
+        bf_answers = []
+        re_answers = []
+        re_opt_answers = []
+
+        for i in range(sample_size):
+            # generate list of unique Points
+            points = gen_unique_kd_points(n[i], dim)
+
+            # add to benchmarking lists
+            lists_bf.append(points)
+            lists_re.append(copy.deepcopy(points))
+
+        # headings variables
+        heading1 = "n input"
+        heading2 = "timings (seconds)"
+        pad_size = len(heading1) if len(
+            str(n[-1])) < len(heading1) else len(str(n[-1]))
+        sep = "-"
+
+        # benchmark bruteforce via lists
+        print(f"\nBRUTEFORCE {dim}D\n\n"
+              f"{heading1:<{pad_size}} {heading2}\n"
+              f"{sep * pad_size:<{pad_size}} {sep * len(heading2)}")
+
+        for i in range(len(lists_bf)):
+            # benchmarking
+            start_time = time.perf_counter()
+            answer = bf_closest_pair_kd(lists_bf[i])
+            end_time = time.perf_counter()
+
+            # add time diff to timings
+            duration = end_time - start_time
+            timings_bf.append(duration)
+
+            print(f"{n[i]:<{pad_size}} {duration}")
+
+            # add answer to list
+            bf_answers.append(answer)
+
+        # benchmark recursion via lists_copy
+        print(f"\nRECURSION {dim}D\n\n"
+              f"{heading1:<{pad_size}} {heading2}\n"
+              f"{sep * pad_size:<{pad_size}} {sep * len(heading2)}")
+
+        for i in range(len(lists_re)):
+            # benchmarking
+            start_time = time.perf_counter()
+            answer = closest_pair_kd(lists_re[i])
+            end_time = time.perf_counter()
+
+            # add time diff to timings
+            duration = end_time - start_time
+            timings_recur.append(duration)
+
+            print(f"{n[i]:<{pad_size}} {duration}")
+
+            # add answer to list
+            re_answers.append(answer)
+
+        # verify bruteforce and recursion has same answer
+        print("\nChecking pair distances matches from bruteforce against "
+              "recursion...")
+
+        answer_dist_matches = True
+        for i in range(len(bf_answers)):
+            if bf_answers[i]["distance"] != re_answers[i]["distance"] and\
+                    bf_answers[i]["distance"] != re_opt_answers[i]["distance"]:
+                answer_dist_matches = False
+                break
+
+        print(f"All answers match? {answer_dist_matches}")
+
+        # graph results
+        plt.figure(fig)
+        plt.plot(n, timings_bf, label=f"Bruteforce {dim}D")
+        plt.plot(n, timings_recur, label=f"Recursion {dim}D")
+        plt.xlabel('input size (n)')
+        plt.ylabel('timings (seconds)')
+        plt.title(f'Growth Rates: Bruteforce vs Recursion {dim}D')
+        plt.legend()  # show legend
+
 
 if __name__ == "__main__":
-    menu = "\nCLOSEST PAIR OF POINTS 2D\n"\
+    menu = "\nCLOSEST PAIR OF POINTS BENCHMARKS\n"\
         "\nWhich task to benchmark?\n"\
-        "1: Bruteforce\n"\
-        "2: Recursion\n"\
-        "3: Recursion vertical points\n"\
-        "4: Recursion optimized\n"\
-        "5: Recursion optimized vertical points\n"\
-        "6: Recursion vs. Recursion optimized\n"\
-        "7: Bruteforce vs. Recursion\n"\
+        "1: 2D Bruteforce\n"\
+        "2: 2D Recursion\n"\
+        "3: 2D Recursion vertical points\n"\
+        "4: 2D Recursion optimized\n"\
+        "5: 2D Recursion optimized vertical points\n"\
+        "6: 2D Recursion vs. Recursion optimized\n"\
+        "7: 2D Bruteforce vs. Recursion\n"\
+        "8: K-D Bruteforce\n"\
+        "9: K-D Recursion\n"\
+        "10: K-D Bruteforce vs. Recursion\n"\
         "X: Exit\n"
 
     while True:
