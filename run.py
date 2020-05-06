@@ -242,10 +242,15 @@ class Run(object):
         while True:
             try:
                 dim = int(self.input())
-                break
             except:
                 print("Must be a number.")
                 continue
+
+            if dim < 1:
+                print("Dimensions must be greater than 0.")
+                continue
+
+            break
 
         # reduce all points
         if dim < self.dim:
