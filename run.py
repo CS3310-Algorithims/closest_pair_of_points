@@ -1,7 +1,8 @@
 """
 Group Project: Closest Pair of Points
 """
-import os.path
+import os
+import sys
 
 from closest_pair import bf_pairlist_kd, closest_pair_kd,\
     Point, closest_pair_2d_opt_plt
@@ -11,20 +12,31 @@ class Run(object):
     """
     Run project
     """
-    menu = "\nK-D IMPLEMENTATION\n"\
-        "1: List points\n"\
-        "2: K-D Bruteforce\n"\
-        "3. K-D Recursion\n"\
-        "4. 2D Planar matplotlib recursion\n"\
-        "5: Change points manually\n"\
-        "6: Reduce dimensions\n"\
-        "7: Add points from file\n"\
-        "8. Remove all points\n"\
-        "X: Exit"
+    tasks = [
+        "List points",
+        "K-D Bruteforce",
+        "K-D Recursion",
+        "2D Planar matplotlib recursion",
+        "Change points manually",
+        "Reduce dimensions",
+        "Add points from file",
+        "Remove all points"
+    ]
 
     def __init__(self):
         self.dim = 1
         self.points = []
+
+    def menu(self):
+        exit_cmd = "X"
+        menu = "\nCLOSEST PAIR IN K-D DIMENSIONS\n"
+        pad = len(str(len(self.tasks)))
+
+        for i, title in enumerate(self.tasks, start=1):
+            menu += f"{i:>{pad}}: " + title + "\n"
+        menu += f"{exit_cmd:>{pad}}: Exit"
+
+        return menu
 
     def setup(self):
         """Run setup"""
@@ -35,6 +47,7 @@ class Run(object):
         print("1: Manually")
         print(f"2: From file {filename}")
         print(f"3: From specific file")
+        print("X: Exit")
 
         while True:
             choice = self.input()
@@ -46,6 +59,9 @@ class Run(object):
                 self.add_from_file(filename)
             elif choice == "3":
                 self.add_from_file()
+            elif choice == "X" or choice == "x":
+                self.clear_screen()
+                break
             else:
                 print("Invalid choice")
                 continue
@@ -54,9 +70,10 @@ class Run(object):
     def start(self):
         """Run user interactive mode"""
         self.setup()
+        menu = self.menu()
 
         while True:
-            print(self.menu, end="\n")
+            print(menu)
             choice = self.input()
 
             if choice == "X" or choice == "x":
@@ -146,7 +163,7 @@ class Run(object):
                 dist = result['distance']
                 self.print_pairs([(point1, point2, dist)])
             except:
-                print("Matpotlib prematurely closed.")
+                print("Matpotlib interrupted.")
         else:
             print("Must have two or more points.")
 
@@ -379,4 +396,11 @@ class Run(object):
 
 
 if __name__ == "__main__":
-    Run().start()
+    try:
+        Run().start()
+    except KeyboardInterrupt:
+        print('Interrupted')
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)

@@ -2,9 +2,11 @@
 Benchmark program
 """
 import copy
-import matplotlib.pyplot as plt
+import os
 import random
 import time
+import sys
+import matplotlib.pyplot as plt
 
 from closest_pair import Point, bf_closest_pair_2d, closest_pair_2d,\
     closest_pair_2d_opt, bf_closest_pair_kd, closest_pair_kd,\
@@ -13,18 +15,35 @@ from closest_pair import Point, bf_closest_pair_2d, closest_pair_2d,\
 
 class Benchmark(object):
     """
-    Benchmark for Closest Pair of Points:
-        - Bruteforce
-        - Recursion
-        - Recursion vertical points
-        - Recursion optimized
-        - Recursion optimized vertical points
-        - Recursion normal vs optimized
-        - Bruteforce vs Recursion vs Recursion Optimized
+    Benchmark for Closest Pair of Points
     """
     random.seed(time.time())
+    tasks = [
+        "2D Bruteforce",
+        "2D Recursion",
+        "2D Recursion Vertical",
+        "2D Recursion Optimized",
+        "2D Recursion Optimized Vertical",
+        "2D Recursion Normal VS Optimized",
+        "2D Bruteforce VS Recursion",
+        "K-D Bruteforce",
+        "K-D Recursion",
+        "K-D Bruteforce vs Recursion"
+    ]
 
-    def run(self, choice=-1):
+    def menu(self):
+        exit_cmd = "X"
+        menu = "\nCLOSEST PAIR OF POINTS BENCHMARKS\n"\
+            "\nWhich task to benchmark?\n"
+        pad = len(str(len(self.tasks)))
+
+        for i, title in enumerate(self.tasks, start=1):
+            menu += f"{i:>{pad}}: " + title + "\n"
+        menu += f"{exit_cmd:>{pad}}: Exit"
+
+        return menu
+
+    def run(self):
         """
         Run benchmark function by choice option and show graph(s)
 
@@ -49,24 +68,31 @@ class Benchmark(object):
             self.recursion_kd,
             self.bf_kd_vs_recursion_kd
         ]
+        menu = self.menu()
 
-        # try to convert choice to int
-        try:
-            choice = int(choice)
-        except:
-            choice = -1
+        while True:
+            try:
+                print(menu)
+                choice = input("> ")
 
-        # run benchmark methods
-        if choice >= 1 and choice <= len(benchmarks):
-            benchmarks[choice-1](choice)
-        else:
-            return False
+                if choice == "X" or choice == "x":
+                    break
 
-        # show graph and close afterwards
-        plt.show()
-        plt.close("all")
+                # try to convert choice to int
+                try:
+                    choice = int(choice)
+                except:
+                    choice = -1
 
-        return True
+                # run benchmark methods
+                if choice >= 1 and choice <= len(benchmarks):
+                    benchmarks[choice-1](choice)
+
+                    # show graph and close afterwards
+                    plt.show()
+                    plt.close("all")
+            except KeyboardInterrupt:
+                print('Interrupted')
 
     def bruteforce_2d(self, fig=1):
         """
@@ -84,7 +110,6 @@ class Benchmark(object):
         lists_bf = []
 
         # generate lists of lists
-        print("\nGenerating random and unique list of points...")
         for i in range(sample_size):
             # generate list of unique Points
             unique_points = Point.get_unique_points(n[i])
@@ -140,7 +165,6 @@ class Benchmark(object):
         lists_re = []
 
         # generate lists of lists
-        print("\nGenerating random and unique list of points...")
         for i in range(sample_size):
             # generate list of unique Points
             unique_points = Point.get_unique_points(n[i])
@@ -197,7 +221,6 @@ class Benchmark(object):
         lists_re = []
 
         # generate lists of lists
-        print("\nGenerating random and unique list of points...")
         for i in range(sample_size):
             # generate list of unique Points
             unique_points = Point.get_unique_points(n[i])
@@ -256,7 +279,6 @@ class Benchmark(object):
         lists_re = []
 
         # generate lists of lists
-        print("\nGenerating random and unique list of points...")
         for i in range(sample_size):
             # generate list of unique Points
             unique_points = Point.get_unique_points(n[i])
@@ -313,7 +335,6 @@ class Benchmark(object):
         lists_re = []
 
         # generate lists of lists
-        print("\nGenerating random and unique list of points...")
         for i in range(sample_size):
             # generate list of unique Points
             unique_points = Point.get_unique_points(n[i])
@@ -377,9 +398,7 @@ class Benchmark(object):
         re_opt_answers = []
 
         # generate lists of lists
-        print("\nRECURSION VS RECURSION OPTIMIZED\n\n"
-              "Generating identical list for random and unique points for "
-              "recursion normal and optimized...")
+        print("\nRECURSION VS RECURSION OPTIMIZED\n\n")
         for i in range(sample_size):
             # generate list of unique Points
             unique_points = Point.get_unique_points(n[i])
@@ -480,9 +499,7 @@ class Benchmark(object):
         re_opt_answers = []
 
         # generate lists of lists
-        print("\nBRUTEFORCE VS RECURSION VS RECURSION OPTIMIZED\n\n"
-              "Generating identical list for random and unique points for "
-              "bruteforce and recursion...")
+        print("\nBRUTEFORCE VS RECURSION VS RECURSION OPTIMIZED\n\n")
         for i in range(sample_size):
             # generate list of unique Points
             unique_points = Point.get_unique_points(n[i])
@@ -592,9 +609,10 @@ class Benchmark(object):
         fig (int): Figure number for plot
         """
         dim = None
+        print("\nWhat dimension?")
         while True:
             try:
-                dim = int(input("\nWhat dimensions?\n"))
+                dim = int(input("> "))
                 break
             except:
                 print("Dimensions must be a number")
@@ -651,9 +669,10 @@ class Benchmark(object):
         fig (int): Figure number for plot
         """
         dim = None
+        print("\nWhat dimension?")
         while True:
             try:
-                dim = int(input("\nWhat dimensions?\n"))
+                dim = int(input("> "))
                 break
             except:
                 print("Dimensions must be a number")
@@ -710,9 +729,10 @@ class Benchmark(object):
         fig (int): Figure number for plot
         """
         dim = None
+        print("\nWhat dimension?")
         while True:
             try:
-                dim = int(input("\nWhat dimensions?\n"))
+                dim = int(input("> "))
                 break
             except:
                 print("Dimensions must be a number")
@@ -810,31 +830,4 @@ class Benchmark(object):
 
 
 if __name__ == "__main__":
-    menu = "\nCLOSEST PAIR OF POINTS BENCHMARKS\n"\
-        "\nWhich task to benchmark?\n"\
-        "1: 2D Bruteforce\n"\
-        "2: 2D Recursion\n"\
-        "3: 2D Recursion vertical points\n"\
-        "4: 2D Recursion optimized\n"\
-        "5: 2D Recursion optimized vertical points\n"\
-        "6: 2D Recursion vs. Recursion optimized\n"\
-        "7: 2D Bruteforce vs. Recursion\n"\
-        "8: K-D Bruteforce\n"\
-        "9: K-D Recursion\n"\
-        "10: K-D Bruteforce vs. Recursion\n"\
-        "X: Exit\n"
-
-    while True:
-        print(menu)
-        choice = input()
-
-        if choice != "X" and choice != "x":
-            # run benchmark with choice number
-            valid = Benchmark().run(choice)
-
-            if not valid:
-                print("Invalid choice")
-        else:
-            break
-
-    print("Exiting benchmark...")
+    Benchmark().run()
