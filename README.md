@@ -1,9 +1,9 @@
 # Group project for Algorithms and Analysis I
 
-## Closest Pair of Points
+## Closest Pair of Points in Planar to Kth Dimensions
 
-Program to find the closest pair of points in a list of points using divide
-and conquer algorithm.
+Program to find the closest pair of points using divide and conquer algorithm.
+Implementation includes 2D planar and K-D multidimensions (1D, 2D, 3D, 4D, ...).
 
 Time Complexity: O(nlogn)
 

@@ -12,7 +12,7 @@ def bf_closest_pair_kd(points):
 
     Parameters
     ----------
-    points (list): List of Point
+    points (list): List of tuple of kth dimensions.
 
     Return
     ------
@@ -43,7 +43,7 @@ def bf_pairlist_kd(points):
 
     Parameters
     ----------
-    points (list): List of Point
+    points (list): List of tuple of kth dimensions.
 
     Return
     ------
@@ -75,6 +75,10 @@ def closest_pair_kd(points):
     Closest: O(nlogn)
     Time Complexity: O(nlogn)
 
+    Parameters
+    ----------
+    points (list): List of tuple of kth dimensions.
+
     Return
     ------
     {"distance": float, "pair": Point}
@@ -90,6 +94,7 @@ def closest_pair_kd(points):
 def closest_kd(points_kd, dim, level):
     """
     Recursively find the closest pair of points at the kth dimensions.
+    Uses both direct recursion and indirect recursion from strip_closest_kd().
 
     Recurrence relation
     -------------------
@@ -102,7 +107,7 @@ def closest_kd(points_kd, dim, level):
 
     Parameters
     ----------
-    points_kd (list): d x n array of points
+    points_kd (list): d x n array of tuple in max d dimensions.
     dim (int): Max dimension of points
     level: Kth dimension level with base of 0
 
@@ -153,13 +158,18 @@ def closest_kd(points_kd, dim, level):
 def strip_closest_kd(strip, min_pair, dim, level):
     """
     Find any points smaller than min_pair with given stirp array.
+    Indirect recursion to closest_kd().
 
     Parameters
     ----------
-    strip (list): d x n array of points
+    strip (list): d x n array of tuple in max d dimensions.
     min_pair (dict): Minimal pair of points with key 'distance' and 'pair'.
     dim (int): Max dimension of points
     level: Kth dimension level
+
+    Return
+    ------
+    {"distance": float, "pair": Point}
     """
     # recursion into strip if next level is less then dimension
     if level + 1 < dim and len(strip[level]) > 1:
