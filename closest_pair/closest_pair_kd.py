@@ -149,7 +149,7 @@ def closest_kd(points_kd, dim, level):
     strip = [[p for p in points_kd[d] if abs(med[level] - p[level]) < delta]
              for d in range(dim)]
 
-    if dim > 1:
+    if level + 1 < dim:
         return strip_closest_kd(strip, min_pair, dim, level + 1)
     else:
         return strip_closest_kd(strip, min_pair, dim, level)
