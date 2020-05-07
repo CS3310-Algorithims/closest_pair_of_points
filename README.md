@@ -17,6 +17,18 @@ python3, matplotlib
 python3 -m run
 ```
 
+## Benchmark algorithms
+
+```bash
+python3 -m benchmark
+```
+
+## Unit tests
+
+```bash
+python3 -m test
+```
+
 ## Team Members
 
 - Alex Tung

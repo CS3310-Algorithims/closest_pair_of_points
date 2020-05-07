@@ -28,6 +28,7 @@ class Run(object):
         self.points = []
 
     def menu(self):
+        """Generate menu string from tasks"""
         exit_cmd = "X"
         menu = "\nCLOSEST PAIR IN K-D DIMENSIONS\n"
         pad = len(str(len(self.tasks)))
@@ -43,7 +44,7 @@ class Run(object):
         print("\nSETUP\n-----")
         filename = "input.txt"
 
-        print("\nEnter items manually or from file?")
+        print("\nEnter points manually or from file?")
         print("1: Manually")
         print(f"2: From file {filename}")
         print(f"3: From specific file")
@@ -68,7 +69,7 @@ class Run(object):
             break
 
     def start(self):
-        """Run user interactive mode"""
+        """Start user interactive mode"""
         self.setup()
         menu = self.menu()
 
@@ -153,12 +154,10 @@ class Run(object):
             print(subtitle)
 
             # convert self.points to list of Point objects
-            plt_points = []
-            for point in self.points:
-                plt_points.append(Point(*point))
+            points = [Point(*point) for point in self.points]
 
             try:
-                result = closest_pair_2d_opt_plt(plt_points, pause_t)
+                result = closest_pair_2d_opt_plt(points, pause_t)
                 point1, point2 = result['pair']
                 dist = result['distance']
                 self.print_pairs([(point1, point2, dist)])
@@ -383,7 +382,6 @@ class Run(object):
             print("EMPTY")
 
     def clear_screen(self):
-        import os
         if os.name == "nt":
             os.system('cls')
         else:
